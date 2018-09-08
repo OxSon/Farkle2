@@ -1,5 +1,6 @@
 package farkle;
 
+import java.awt.Color;
 import java.awt.Graphics;
 
 public class Die {
@@ -8,8 +9,10 @@ public class Die {
 	public static final int MAXVALUE = 6;	//The number of sides the Dice has
 	public static final int SIZE = 100;			//How big to display the Dice
 	public static final double HYPOT = Math.sqrt(SIZE * SIZE * 2);
+	public static final int DOTSIZE = 19;
+
 	//Functional Fields
-	int value;
+	private int value;
 
 	//Renderable Fields
 	private Vector2 position;		//Where the ORIGIN of the Dice is on the board
@@ -28,17 +31,20 @@ public class Die {
 		Bound = Bounds;
 		this.position = position;
 		deltaPosition = new Vector2();
+		roll();
 	}
 
 	/**
 	 * This is the main method that is called in order for the dice to have visual effects on the GUI
 	 */
 	public void update() {
-		if (Math.abs(deltaAngle) > .05) {
+		if (Math.abs(deltaAngle) > .01 || Math.abs(deltaPosition.GetX()) > 1 || Math.abs(deltaPosition.GetY()) > 1) {
 			angle += deltaAngle;
-			angle *= .96;
+			deltaAngle *= .98;
 			UpdatePosition();
-			roll();				//While the dice is clacking around, make the value change		TODO make it slow as the deltaAngle Goes down
+			if (Math.random() < Math.abs(deltaAngle)) {
+				roll();				//While the dice is clacking around, make the value change		TODO make it slow as the deltaAngle Goes down
+			}
 		} else {
 			deltaPosition.Scale(0);	//Set the Vector to 0
 			deltaAngle = 0;
@@ -46,6 +52,7 @@ public class Die {
 	}
 
 	public void draw(Graphics g) {
+		g.setColor(Color.WHITE);
 		Vector2[] Points = getRotatedPoints();
 		int[] X = new int[Points.length];
 		int[] Y = new int[Points.length];
@@ -54,6 +61,55 @@ public class Die {
 			Y[i] = (int) Points[i].GetY();
 		}
 		g.fillPolygon(X, Y, Points.length);
+		Vector2[] DotPositions;
+		switch (value) {
+			case 1:
+				DotPositions = new Vector2[1];
+				DotPositions[0] = new Vector2(position.GetX(), position.GetY());
+				break;
+			case 2:
+				DotPositions = new Vector2[2];
+				DotPositions[0] = new Vector2(position.GetX() - SIZE / 4, position.GetY() - SIZE / 4);
+				DotPositions[1] = new Vector2(position.GetX() + SIZE / 4, position.GetY() + SIZE / 4);
+				break;
+			case 3:
+				DotPositions = new Vector2[3];
+				DotPositions[0] = new Vector2(position.GetX() - SIZE / 4, position.GetY() - SIZE / 4);
+				DotPositions[1] = new Vector2(position.GetX(), position.GetY());
+				DotPositions[2] = new Vector2(position.GetX() + SIZE / 4, position.GetY() + SIZE / 4);
+				break;
+			case 4:
+				DotPositions = new Vector2[4];
+				DotPositions[0] = new Vector2(position.GetX() - SIZE / 4, position.GetY() - SIZE / 4);
+				DotPositions[1] = new Vector2(position.GetX() + SIZE / 4, position.GetY() + SIZE / 4);
+				DotPositions[2] = new Vector2(position.GetX() + SIZE / 4, position.GetY() - SIZE / 4);
+				DotPositions[3] = new Vector2(position.GetX() - SIZE / 4, position.GetY() + SIZE / 4);
+				break;
+			case 5:
+				DotPositions = new Vector2[5];
+				DotPositions[0] = new Vector2(position.GetX() - SIZE / 4, position.GetY() - SIZE / 4);
+				DotPositions[1] = new Vector2(position.GetX() + SIZE / 4, position.GetY() + SIZE / 4);
+				DotPositions[2] = new Vector2(position.GetX() + SIZE / 4, position.GetY() - SIZE / 4);
+				DotPositions[3] = new Vector2(position.GetX() - SIZE / 4, position.GetY() + SIZE / 4);
+				DotPositions[4] = new Vector2(position.GetX(), position.GetY());
+				break;
+			case 6:
+				DotPositions = new Vector2[6];
+				DotPositions[0] = new Vector2(position.GetX() - SIZE / 4, position.GetY() - SIZE / 4);
+				DotPositions[1] = new Vector2(position.GetX() + SIZE / 4, position.GetY() + SIZE / 4);
+				DotPositions[2] = new Vector2(position.GetX() + SIZE / 4, position.GetY() - SIZE / 4);
+				DotPositions[3] = new Vector2(position.GetX() - SIZE / 4, position.GetY() + SIZE / 4);
+				DotPositions[4] = new Vector2(position.GetX() + SIZE / 4, position.GetY());
+				DotPositions[5] = new Vector2(position.GetX() - SIZE / 4, position.GetY());
+				break;
+			default:
+				DotPositions = new Vector2[0];
+		}
+		g.setColor(Color.BLACK);
+		for (int i = 0; i < DotPositions.length; i++) {
+			DotPositions[i] = rotatePoint(DotPositions[i], position, angle);
+			g.fillOval((int) DotPositions[i].GetX() - DOTSIZE / 2, (int) DotPositions[i].GetY() - DOTSIZE / 2, DOTSIZE, DOTSIZE);
+		}
 	}
 
 	/**
@@ -99,6 +155,17 @@ public class Die {
 	}
 
 	/**
+	 * This is the method used to make the dice move
+	 *
+	 * @param Intensity
+	 */
+	public void shake(double Intensity) {
+		double newAngle = (Math.random()) * Math.PI * 2;
+		deltaAngle = (Math.random() - .5) * 10;
+		deltaPosition = new Vector2(Math.cos(newAngle) * Intensity, Math.sin(newAngle) * Intensity);
+	}
+
+	/**
 	 * This updates the value to a random value up to and including MAXVALUE, but greater than 0
 	 */
 	public void roll() {
@@ -118,16 +185,12 @@ public class Die {
 	public double getAngle() {
 		return angle;
 	}
+	
+	public int getValue(){
+		return value;
+	}
 
-	/**
-	 * This is the method used to make the dice move
-	 *
-	 * @param Intensity
-	 */
-	public void shake(double Intensity) {
-		deltaAngle = (Math.random() - .5) * Intensity * .2;
-		System.out.println(deltaAngle);
-		deltaPosition = new Vector2((Math.random() - .5) * Intensity, (Math.random() - .5) * Intensity);
-		System.out.println(((Math.random() - .5) * Intensity) + " " + ((Math.random() - .5) * Intensity));
+	public boolean isStopped() {
+		return deltaAngle == 0;
 	}
 }

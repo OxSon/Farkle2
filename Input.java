@@ -75,7 +75,13 @@ public class Input {
 						}
 						break;
 					case KeyEvent.KEY_RELEASED:	// If the key was released, this method already captures that it was pressed, so it is always set up
-						SetKey(e.getKeyCode(), false);	// Updates current state
+						if (Keys.contains(e.getKeyCode())) {	// Updates current state
+							SetKey(e.getKeyCode(), false);
+						} else {	// Sets up entry
+							Keys.add(e.getKeyCode());
+							KeyPressed.add(true);
+							KeyLastState.add(false);
+						}
 						break;
 				}
 				return false;
