@@ -33,6 +33,13 @@ public class Die {
 		deltaPosition = new Vector2();
 		roll();
 	}
+	
+	public void setAngle(double newAngle){
+		angle = newAngle;
+	}
+	public void setPosition(Vector2 newPosition){
+		position = newPosition;
+	}
 
 	/**
 	 * This is the main method that is called in order for the dice to have visual effects on the GUI
