@@ -8,11 +8,11 @@ import java.util.ArrayList;
  * handles AI-controlled player decisions for Farkle
  */
 public class SkyNet {
-    /**
-     * TODO JOBS
-     * 1. select dice to save, return arraylist
-     * 2. decide whether to roll again or end turn, return boolean
-     */
+/**
+ * TODO JOBS
+ * 1. select dice to save, return arraylist
+ * 2. decide whether to roll again or end turn, return boolean
+ */
 
     /**
      * determines how risky the AI plays
@@ -20,7 +20,7 @@ public class SkyNet {
     private double riskTolerance;
 
     /**
-     * @param risk risk tolerance of AI
+     * @param risk risk tolerance factor of AI
      */
     public SkyNet(double risk) {
         riskTolerance = risk;
