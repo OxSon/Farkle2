@@ -10,12 +10,12 @@ import java.util.ArrayList;
 
 public class MainMenuState extends GameState {
 
-    private Button Play;
-    private Button Exit;
+    private final Button Play;
+    private final Button Exit;
 
-    private Vector2 DotPosition;    //This will just be a dot that follows the mouse around to look cool
+    private final Vector2 DotPosition;    //This will just be a dot that follows the mouse around to look cool
 
-    ArrayList<Die> Dice;
+    final ArrayList<Die> Dice;
 
     public MainMenuState(Renderer Render, StateManager Controller) {
         super(Render, Controller);
@@ -47,8 +47,8 @@ public class MainMenuState extends GameState {
         g.setColor(Color.GREEN);
         g.fillRect(0, 0, Renderer.WindowWidth, Renderer.WindowHeight);
         g.setColor(Color.WHITE);
-        for (int i = 0; i < Dice.size(); i++) {
-            Dice.get(i).draw(g);
+        for (Die aDice : Dice) {
+            aDice.draw(g);
         }
         Play.Draw(g);
         Exit.Draw(g);
@@ -79,12 +79,14 @@ public class MainMenuState extends GameState {
         Exit.Update(MousePosition);
         if (Math.abs(DotPosition.GetX() - MousePosition.GetX()) < 1) {
             DotPosition.SetX(MousePosition.GetX());
-        } else {
+        }
+        else {
             DotPosition.AddX((MousePosition.GetX() - DotPosition.GetX()) / 5);
         }
         if (Math.abs(DotPosition.GetY() - MousePosition.GetY()) < 1) {
             DotPosition.SetY(MousePosition.GetY());
-        } else {
+        }
+        else {
             DotPosition.AddY((MousePosition.GetY() - DotPosition.GetY()) / 5);
         }
         for (int i = 0; i < Dice.size(); i++) {

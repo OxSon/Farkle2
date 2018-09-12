@@ -7,8 +7,8 @@ public class GamePanel extends JPanel implements Runnable {
 
     private final StateManager Controller;
 
-    private int FPS = 60;    //This is the Target FPS, not actual
-    private long TargetTime = 1000 / FPS;
+    private final int FPS = 60;    //This is the Target FPS, not actual
+    private final long TargetTime = 1000 / FPS;
 
     public GamePanel(StateManager Controller) {
         this.Controller = Controller;

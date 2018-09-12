@@ -21,6 +21,7 @@ public class PlayState extends GameState {
     private boolean TurnStart = true;
     private boolean Rolling = false;    //This will say if you should change the face of the dice during it's updates
 
+
     public PlayState(Renderer Render, StateManager Controller) {
         super(Render, Controller);
         Players = new ArrayList<>();
@@ -39,8 +40,8 @@ public class PlayState extends GameState {
     @Override
     public void Draw(Graphics g) {
         GUI.Draw(g, this);        //Draw the GUI
-        for (int i = 0; i < FreeDice.size(); i++) {    //Draw the free dice
-            FreeDice.get(i).draw(g);
+        for (Die aFreeDice : FreeDice) {    //Draw the free dice
+            aFreeDice.draw(g);
         }
         for (int i = 0; i < SelectedDice.size(); i++) {
             g.setColor(Color.RED);
@@ -80,7 +81,8 @@ public class PlayState extends GameState {
                         return;
                     }
                 }
-            } else if (e.getButton() == MouseEvent.BUTTON2) {
+            }
+            else if (e.getButton() == MouseEvent.BUTTON2) {
                 if (Players.get(PlayerTurn).getScore() == 0) {
                     //if (RunningTotal + getScore(SelectedDice) < 500) {
                     //	return;
@@ -88,12 +90,13 @@ public class PlayState extends GameState {
                 }
                 RunningTotal += getScore(SelectedDice);
                 endTurn();
-            } else if (e.getButton() == MouseEvent.BUTTON3) {
+            }
+            else if (e.getButton() == MouseEvent.BUTTON3) {
                 if (TurnStart) {        //If this is the first roll of a hand
                     TurnStart = false;
                     ShakeDice();
                 }
-                if (getScore(SelectedDice) != 0) {
+                if (getScore(SelectedDice) != 0 && verifyHand(SelectedDice)) {
                     RunningTotal += getScore(SelectedDice);
                     CapturedDice.addAll(SelectedDice);
                     SelectedDice.clear();
@@ -104,7 +107,8 @@ public class PlayState extends GameState {
                     if (FreeDice.isEmpty()) {
                         NextHand();
                         GUI.notify("Extra Hand!");
-                    } else {
+                    }
+                    else {
                         ShakeDice();
                     }
                 }
@@ -131,7 +135,8 @@ public class PlayState extends GameState {
                 RunningTotal = 0;
                 endTurn();
             }
-        } else if (Players.get(PlayerTurn).isAI()) {
+        }
+        else if (Players.get(PlayerTurn).isAI()) {
             if (TurnStart) {
                 TurnStart = false;
                 ShakeDice();
@@ -147,13 +152,17 @@ public class PlayState extends GameState {
                     SelectedDice.add(FreeDice.remove((int) (Math.random() * FreeDice.size())));
                 }
                 if (!verifyHand(SelectedDice)) {
+                    //FIXME debugging
+                    System.out.println("verifyHand check failed");
+
                     FreeDice.addAll(SelectedDice);
                     SelectedDice.clear();
                 }
                 if (getScore(SelectedDice) == 0) {
                     FreeDice.addAll(SelectedDice);
                     SelectedDice.clear();
-                } else {
+                }
+                else {
                     System.out.println(CapturedDice.size() + " " + SelectedDice + " " + FreeDice);
                     RunningTotal += getScore(SelectedDice);
                     CapturedDice.addAll(SelectedDice);
@@ -164,7 +173,8 @@ public class PlayState extends GameState {
                     }
                     if (RunningTotal < 500) {
                         ShakeDice();
-                    } else {
+                    }
+                    else {
                         endTurn();
                     }
                     solved = true;
@@ -204,25 +214,34 @@ public class PlayState extends GameState {
         PlayerTurn = (PlayerTurn + 1) % Players.size();
     }
 
-    //FIXME move?
-    public boolean verifyHand(ArrayList<Die> Dice) {
-        int baseScore = getScore(Dice);
-        for (int i = 0; i < Dice.size(); i++) {
-            Die d = Dice.remove(0);
-            if (getScore(Dice) == baseScore) {
-                return false;
-            } else {
-                Dice.add(d);
-            }
-        }
-        return true;
-    }
-
-    public static int getScore(ArrayList<Die> Dice) {
-        int score = 0;
+    //FIXME test
+    public static boolean verifyHand(ArrayList<Die> Dice) {
+        //build record of how many of each die-value we have
         int[] oc = new int[Die.MAXVALUE];
         for (int i = 0; i < Dice.size(); i++) {
             oc[Dice.get(i).getValue() - 1]++;
+        }
+        //test failure conditions
+        for (int i = 0; i < Dice.size(); i++) {
+            //we don't need to pay attention to non-existent die-values
+            if (oc[i] > 0) {
+                //ones and twos of values other than 1 or 5 are invalid except in scenarios
+                //that involve using all 6 dice
+                if (oc[i] < 3 && (i != 0 && i != 4)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public static int getScore(ArrayList<Die> dice) {
+        int score = 0;
+        int[] oc = new int[Die.MAXVALUE];
+
+        for (int i = 0; i < dice.size(); i++) {
+            oc[dice.get(i).getValue() - 1]++;
         }
         if (oc[0] == 1) {
             score += 100;
@@ -302,6 +321,7 @@ public class PlayState extends GameState {
         if (count == 2) {    //If we found 2 triplets
             return 2500;        //Special case, this will use the whole roll, leaving no other points avalible
         }
+
         return score;
     }
 

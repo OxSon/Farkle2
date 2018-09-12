@@ -12,7 +12,8 @@ public class Main {
             public void run() {
                 if (!MasterController.IsRunning()) {
                     System.exit(0);
-                } else {
+                }
+                else {
                     MasterController.Update();
                 }
             }

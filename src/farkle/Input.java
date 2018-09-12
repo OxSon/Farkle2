@@ -15,9 +15,9 @@ import java.util.ArrayList;
  */
 public class Input {
 
-    private static ArrayList<Integer> Keys;    // Integer representing the Keyboard ID of a key
-    private static ArrayList<Boolean> KeyPressed;    // true is down, false is up This is always current
-    private static ArrayList<Boolean> KeyLastState;    // true is down, false is up This is what it last was when it was checked
+    private static final ArrayList<Integer> Keys;    // Integer representing the Keyboard ID of a key
+    private static final ArrayList<Boolean> KeyPressed;    // true is down, false is up This is always current
+    private static final ArrayList<Boolean> KeyLastState;    // true is down, false is up This is what it last was when it was checked
 
     public static boolean IsKeyPressed(int Key) {    // This returns true if the key was pressed. Further calls will return false until the key is Released
         if (Keys.contains(Key)) {    // If the key is in the list
@@ -44,7 +44,8 @@ public class Input {
     public static boolean IsKeyDown(int Key) {    //This checks if the key is down at any moment. Always returns if the key is down, regardless of previous calls
         if (Keys.contains(Key)) {    // If the key is in the list, we just need to return the current state
             return KeyPressed.get(Keys.indexOf(Key));
-        } else {    // If the key is not in the list, add it
+        }
+        else {    // If the key is not in the list, add it
             Keys.add(Key);    //Add the entry
             KeyPressed.add(false);
             KeyLastState.add(false);
@@ -69,7 +70,8 @@ public class Input {
                     case KeyEvent.KEY_PRESSED:    // This sets up the entry in the arrays for each key if it is pressed and not already in the array, if it is then it updates the state
                         if (Keys.contains(e.getKeyCode())) {    // Updates current state
                             SetKey(e.getKeyCode(), true);
-                        } else {    // Sets up entry
+                        }
+                        else {    // Sets up entry
                             Keys.add(e.getKeyCode());
                             KeyPressed.add(true);
                             KeyLastState.add(false);
@@ -78,7 +80,8 @@ public class Input {
                     case KeyEvent.KEY_RELEASED:    // If the key was released, this method already captures that it was pressed, so it is always set up
                         if (Keys.contains(e.getKeyCode())) {    // Updates current state
                             SetKey(e.getKeyCode(), false);
-                        } else {    // Sets up entry
+                        }
+                        else {    // Sets up entry
                             Keys.add(e.getKeyCode());
                             KeyPressed.add(true);
                             KeyLastState.add(false);

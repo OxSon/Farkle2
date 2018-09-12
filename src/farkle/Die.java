@@ -19,7 +19,7 @@ public class Die {
     private Vector2 deltaPosition;    //How the Dice is moving
     private double angle;            //The Angle of rotation for the dice
     private double deltaAngle;        //How quickly the angle is changing and in which direction
-    private Rectangle Bound;        //This is the restriction of where the dice is allowed to be
+    private final Rectangle Bound;        //This is the restriction of where the dice is allowed to be
 
     /**
      * Constructor for the Dice
@@ -32,6 +32,15 @@ public class Die {
         this.position = position;
         deltaPosition = new Vector2();
         roll();
+    }
+
+    //FIXME constructor for debugging help
+    //initializes a die with a given value
+    public Die(int value) {
+        Bound = new Rectangle(0, 0, 0, 0);
+        position = new Vector2();
+        deltaPosition = new Vector2();
+        this.value = value;
     }
 
     public void setAngle(double newAngle) {
@@ -53,7 +62,8 @@ public class Die {
             if (Math.random() < Math.abs(deltaAngle)) {
                 roll();                //While the dice is clacking around, make the value change		TODO make it slow as the deltaAngle Goes down
             }
-        } else {
+        }
+        else {
             deltaPosition.Scale(0);    //Set the Vector to 0
             deltaAngle = 0;
         }
@@ -126,13 +136,13 @@ public class Die {
     private void UpdatePosition() {
         position.Add(deltaPosition);
         Vector2[] Points = getRotatedPoints();
-        for (int i = 0; i < Points.length; i++) {
-            if (Points[i].GetX() < Bound.GetX() || Points[i].GetX() > Bound.GetX() + Bound.GetWidth()) {    //If the point is outside of the bounds because of X
+        for (Vector2 Point : Points) {
+            if (Point.GetX() < Bound.GetX() || Point.GetX() > Bound.GetX() + Bound.GetWidth()) {    //If the point is outside of the bounds because of X
                 position.AddX(-deltaPosition.GetX() * 2);        //Undo the move so it is back in bounds
                 deltaPosition.SetX(-deltaPosition.GetX());    //Make the direction it is going bounce to the other direction
                 break;
             }
-            if (Points[i].GetY() < Bound.GetY() || Points[i].GetY() > Bound.GetY() + Bound.GetHeight()) {    //If the point is outside of the bounds because of Y
+            if (Point.GetY() < Bound.GetY() || Point.GetY() > Bound.GetY() + Bound.GetHeight()) {    //If the point is outside of the bounds because of Y
                 position.AddY(-deltaPosition.GetY() * 2);        //Undo the move so it is back in bounds
                 deltaPosition.SetY(-deltaPosition.GetY());    //Make the direction it is going bounce to the other direction
                 break;

@@ -2,7 +2,7 @@ package farkle;
 
 public class Player {
 
-    private String name;
+    private final String name;
     private int Score;
     private int Farkles;
     private boolean AIControlled;
@@ -19,7 +19,8 @@ public class Player {
     public void FinishTurn(int PointsScored) {
         if (PointsScored == 0) {
             Farkles++;
-        } else {
+        }
+        else {
             Score += PointsScored;
         }
     }

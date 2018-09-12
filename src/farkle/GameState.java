@@ -4,9 +4,10 @@ import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+@SuppressWarnings("EmptyMethod")
 public abstract class GameState implements MouseListener {
-    protected Renderer Render;
-    protected StateManager Controller;
+    protected final Renderer Render;
+    protected final StateManager Controller;
 
     public GameState(Renderer Render, StateManager Controller) {
         this.Render = Render;
