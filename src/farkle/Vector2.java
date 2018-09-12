@@ -15,43 +15,43 @@ public class Vector2 {
         this.y = y;
     }
 
-    public double GetX() {
+    public double getX() {
         return x;
     }
 
-    public double GetY() {
+    public double getY() {
         return y;
     }
 
-    public void SetX(double x) {
+    public void setX(double x) {
         this.x = x;
     }
 
-    public void SetY(double y) {
+    public void setY(double y) {
         this.y = y;
     }
 
-    public void Add(Vector2 o) {
-        x += o.GetX();
-        y += o.GetY();
+    public void add(Vector2 o) {
+        x += o.getX();
+        y += o.getY();
     }
 
-    public void AddX(double x) {
+    public void addX(double x) {
         this.x += x;
     }
 
-    public void AddY(double y) {
+    public void addY(double y) {
         this.y += y;
     }
 
-    public void Scale(double Factor) {
+    public void scale(double Factor) {
         x *= Factor;
         y *= Factor;
     }
 
     @Override
     public String toString() {
-        return "(" + GetX() + ", " + GetY() + ")";
+        return "(" + getX() + ", " + getY() + ")";
     }
 
     @Override
@@ -64,10 +64,10 @@ public class Vector2 {
         }
         if (o instanceof Vector2) {
             Vector2 other = (Vector2) o;
-            if (Math.abs(other.GetX() - x) > .01) {
+            if (Math.abs(other.getX() - x) > .01) {
                 return false;
             }
-            return !(Math.abs(other.GetY() - y) > .01);
+            return !(Math.abs(other.getY() - y) > .01);
         }
         return true;
     }

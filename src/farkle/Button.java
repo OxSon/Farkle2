@@ -1,61 +1,66 @@
 package farkle;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
+import java.awt.*;
 //import java.awt.event.ActionListener; Will be used if we want to make the buttons self contained action listeners
 
 public class Button {
 
-    final Rectangle Rect;
-    final String Text;
+    final Rectangle rect;
+    final String text;
 
-    final Color Border;
-    final Color Inner;
-    final Color Fade;
-    int Opacity;
+    final Color border;
+    final Color inner;
+    final Color fade;
+    int opacity;
 
-    final int BorderWidth;
-    final int FontSize;
+    final int borderWidth;
+    final int fontSize;
 
-    public Button(Rectangle Rect, String Text, Color Border, Color Inner, Color Fade, int BorderWidth, int FontSize) {
-        this.Rect = Rect;
-        this.Text = Text;
-        this.Border = Border;
-        this.Inner = Inner;
-        this.Fade = Fade;
-        this.BorderWidth = BorderWidth;
-        this.FontSize = FontSize;
+    public Button(Rectangle rect, String text, Color border, Color inner, Color fade, int borderWidth, int fontSize) {
+        this.rect = rect;
+        this.text = text;
+        this.border = border;
+        this.inner = inner;
+        this.fade = fade;
+        this.borderWidth = borderWidth;
+        this.fontSize = fontSize;
     }
 
-    public boolean ContainsPoint(Vector2 p) {
-        return Rect.ContainsPoint(p);
+    public boolean containsPoint(Vector2 p) {
+        return rect.containsPoint(p);
     }
 
-    public void Update(Vector2 MousePos) {
-        if (Rect.ContainsPoint(MousePos)) {
-            if (Opacity <= 240) {
-                Opacity += 15;
+    public void update(Vector2 MousePos) {
+        if (rect.containsPoint(MousePos)) {
+            if (opacity <= 240) {
+                opacity += 15;
             }
         }
         else {
-            if (Opacity >= 15) {
-                Opacity -= 15;
+            if (opacity >= 15) {
+                opacity -= 15;
             }
         }
     }
 
     public void Draw(Graphics g) {
-        g.setColor(Border);
-        g.fillRect(Rect.GetX(), Rect.GetY(), Rect.GetWidth(), Rect.GetHeight());
-        g.setColor(Inner);
-        g.fillRect(Rect.GetX() + BorderWidth, Rect.GetY() + BorderWidth, Rect.GetWidth() - BorderWidth * 2, Rect.GetHeight() - BorderWidth * 2);
-        g.setColor(new Color(Fade.getRed(), Fade.getGreen(), Fade.getBlue(), Opacity));
-        g.fillRect(Rect.GetX() + BorderWidth, Rect.GetY() + BorderWidth, Rect.GetWidth() - BorderWidth * 2, Rect.GetHeight() - BorderWidth * 2);
+        g.setColor(border);
+        g.fillRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+
+        g.setColor(inner);
+        g.fillRect(rect.getX() + borderWidth, rect.getY() + borderWidth,
+                rect.getWidth() - borderWidth * 2, rect.getHeight() - borderWidth * 2);
+
+        g.setColor(new Color(fade.getRed(), fade.getGreen(), fade.getBlue(), opacity));
+        g.fillRect(rect.getX() + borderWidth, rect.getY() + borderWidth, rect.getWidth()
+                - borderWidth * 2, rect.getHeight() - borderWidth * 2);
+
         g.setColor(Color.BLACK);
-        g.setFont(new Font("TimesRoman", Font.BOLD, FontSize));
-        int Width = g.getFontMetrics().stringWidth(Text);
-        int Height = g.getFontMetrics().getHeight();
-        g.drawString(Text, Rect.GetX() + Rect.GetWidth() / 2 - Width / 2, Rect.GetY() + Rect.GetHeight() / 2 + Height / 4);
+        g.setFont(new Font("TimesRoman", Font.BOLD, fontSize));
+
+        int width = g.getFontMetrics().stringWidth(text);
+        int height = g.getFontMetrics().getHeight();
+        g.drawString(text, rect.getX() + rect.getWidth() / 2 - width / 2, rect.getY()
+                + rect.getHeight() / 2 + height / 4);
     }
 }

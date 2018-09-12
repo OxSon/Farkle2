@@ -1,28 +1,28 @@
 package farkle;
 
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 @SuppressWarnings("EmptyMethod")
 public abstract class GameState implements MouseListener {
-    protected final Renderer Render;
-    protected final StateManager Controller;
+    protected final Renderer render;
+    protected final StateManager controller;
 
-    public GameState(Renderer Render, StateManager Controller) {
-        this.Render = Render;
-        this.Controller = Controller;
+    public GameState(Renderer render, StateManager controller) {
+        this.render = render;
+        this.controller = controller;
     }
 
-    public void Pause() {
+    public void pause() {
     }
 
-    public void Resume() {
+    public void resume() {
     }
 
-    public abstract void Draw(Graphics g);
+    public abstract void draw(Graphics g);
 
-    public abstract void Update();
+    public abstract void update();
 
     @Override
     public void mouseClicked(MouseEvent e) {

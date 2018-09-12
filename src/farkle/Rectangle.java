@@ -4,19 +4,19 @@ public class Rectangle {
 
     private final int x, y, width, height;
 
-    public int GetX() {
+    public int getX() {
         return x;
     }
 
-    public int GetY() {
+    public int getY() {
         return y;
     }
 
-    public int GetWidth() {
+    public int getWidth() {
         return width;
     }
 
-    public int GetHeight() {
+    public int getHeight() {
         return height;
     }
 
@@ -27,18 +27,18 @@ public class Rectangle {
         this.height = height;
     }
 
-    public boolean ContainsPoint(Vector2 p) {
+    public boolean containsPoint(Vector2 p) {
         boolean collide = true;
-        if (p.GetX() < x) {
+        if (p.getX() < x) {
             collide = false;
         }
-        else if (p.GetX() > x + width) {
+        else if (p.getX() > x + width) {
             collide = false;
         }
-        else if (p.GetY() < y) {
+        else if (p.getY() < y) {
             collide = false;
         }
-        else if (p.GetY() > y + height) {
+        else if (p.getY() > y + height) {
             collide = false;
         }
         return collide;

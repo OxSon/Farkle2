@@ -1,74 +1,74 @@
 package farkle;
 
-import java.awt.Graphics;
+import java.awt.*;
 import java.util.Stack;
 
 public class StateManager {
 
-    private final Stack<GameState> States;
-    private boolean Running = true;
-    private boolean Pop = false;
+    private final Stack<GameState> states;
+    private boolean running = true;
+    private boolean pop = false;
 
-    private Renderer Rend;
-    private final GamePanel Panel;
+    private Renderer rend;
+    private final GamePanel panel;
 
     public StateManager() {
-        States = new Stack<>();
-        GameState IntialState = new MainMenuState(Rend, this);
-        States.push(IntialState);
-        Rend = new Renderer(this);
-        Panel = new GamePanel(this);
-        Panel.addMouseListener(IntialState);
-        Rend.SetGamePanel(Panel);
-        Rend.RepackFrame();
+        states = new Stack<>();
+        GameState initialState = new MainMenuState(rend, this);
+        states.push(initialState);
+        rend = new Renderer(this);
+        panel = new GamePanel(this);
+        panel.addMouseListener(initialState);
+        rend.setGamePanel(panel);
+        rend.repackFrame();
     }
 
-    public boolean IsRunning() {
-        return Running;
+    public boolean isRunning() {
+        return running;
     }
 
-    public void Exit() {
-        Running = false;
+    public void exit() {
+        running = false;
     }
 
-    public void Pop() {
-        Pop = true;
+    public void pop() {
+        pop = true;
     }
 
-    public void Push(GameState NewState) {
-        States.lastElement().Pause();
-        Panel.removeMouseListener(States.lastElement());
-        States.push(NewState);
-        Panel.addMouseListener(NewState);
+    public void push(GameState NewState) {
+        states.lastElement().pause();
+        panel.removeMouseListener(states.lastElement());
+        states.push(NewState);
+        panel.addMouseListener(NewState);
     }
 
-    public void Update() {
-        if (!States.isEmpty() && Running) {
-            if (Pop) {
-                States.pop();
-                Pop = false;
-                if (!States.isEmpty()) {
-                    Panel.addMouseListener(States.lastElement());
-                    States.lastElement().Resume();
-                    States.lastElement().Update();
+    public void update() {
+        if (!states.isEmpty() && running) {
+            if (pop) {
+                states.pop();
+                pop = false;
+                if (!states.isEmpty()) {
+                    panel.addMouseListener(states.lastElement());
+                    states.lastElement().resume();
+                    states.lastElement().update();
                 }
                 else {
-                    Running = false;
+                    running = false;
                 }
             }
             else {
-                States.lastElement().Update();
+                states.lastElement().update();
             }
         }
         else {
-            Running = false;
+            running = false;
         }
     }
 
-    public void Draw(Graphics g) {
-        if (!States.isEmpty() && Running) {
-            States.lastElement().Draw(g);
-            Panel.repaint();
+    public void draw(Graphics g) {
+        if (!states.isEmpty() && running) {
+            states.lastElement().draw(g);
+            panel.repaint();
         }
     }
 }

@@ -1,42 +1,42 @@
 package farkle;
 
-import java.awt.Toolkit;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseListener;
-import javax.swing.JFrame;
 
 public class Renderer {
 
-    private final JFrame Frame;
+    private final JFrame frame;
     public static final int WindowWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
     public static final int WindowHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
 
-    public Renderer(StateManager Controller) {
-        Frame = new JFrame();
-        Frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        Frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        Frame.setUndecorated(true);
-        Frame.setResizable(false);
-        Frame.setVisible(true);
+    public Renderer(StateManager controller) {
+        frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.setUndecorated(true);
+        frame.setResizable(false);
+        frame.setVisible(true);
     }
 
-    public void SetMouseListener(MouseListener l) {
-        Frame.getContentPane().addMouseListener(l);
+    public void setMouseListener(MouseListener l) {
+        frame.getContentPane().addMouseListener(l);
     }
 
-    public void SetGamePanel(GamePanel p) {
-        Frame.setContentPane(p);
+    public void setGamePanel(GamePanel p) {
+        frame.setContentPane(p);
     }
 
-    public void RepackFrame() {
-        Frame.setBounds(0, 0, WindowWidth, WindowHeight);
-        Frame.setVisible(true);
+    public void repackFrame() {
+        frame.setBounds(0, 0, WindowWidth, WindowHeight);
+        frame.setVisible(true);
     }
 
-    public static int PercentToPixlesWidth(double Percent) {
+    public static int percentToPixelsWidth(double Percent) {
         return (int) (WindowWidth * Percent / 100);
     }
 
-    public static int PercentToPixlesHeight(double Percent) {
+    public static int percentToPixelsHeight(double Percent) {
         return (int) (WindowHeight * Percent / 100);
     }
 }

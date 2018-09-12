@@ -5,16 +5,16 @@ import java.util.TimerTask;
 
 public class Main {
     public static void main(String[] args) {
-        StateManager MasterController = new StateManager();
+        StateManager masterController = new StateManager();
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                if (!MasterController.IsRunning()) {
+                if (!masterController.isRunning()) {
                     System.exit(0);
                 }
                 else {
-                    MasterController.Update();
+                    masterController.update();
                 }
             }
         }, 0, 16);

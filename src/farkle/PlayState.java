@@ -1,7 +1,6 @@
 package farkle;
 
-import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -10,106 +9,114 @@ public class PlayState extends GameState {
 
     public static final int NUMOFDICE = 6;
 
-    private final ArrayList<Die> FreeDice;
-    private final ArrayList<Die> SelectedDice;
-    private final ArrayList<Die> CapturedDice;
+    private final ArrayList<Die> freeDice;
+    private final ArrayList<Die> selectedDice;
+    private final ArrayList<Die> capturedDice;
 
-    private final ArrayList<Player> Players;
-    private int PlayerTurn;
+    private final ArrayList<Player> players;
+    private int playerTurn;
 
-    private int RunningTotal;
-    private boolean TurnStart = true;
-    private boolean Rolling = false;    //This will say if you should change the face of the dice during it's updates
+    private int runningTotal;
+    private boolean turnStart = true;
+    private boolean rolling = false;    //This will say if you should change the face of the dice during it's updates
 
 
-    public PlayState(Renderer Render, StateManager Controller) {
-        super(Render, Controller);
-        Players = new ArrayList<>();
-        FreeDice = new ArrayList<>();
-        SelectedDice = new ArrayList<>();
-        CapturedDice = new ArrayList<>();
+    public PlayState(Renderer render, StateManager controller) {
+        super(render, controller);
+        players = new ArrayList<>();
+        freeDice = new ArrayList<>();
+        selectedDice = new ArrayList<>();
+        capturedDice = new ArrayList<>();
+
         for (int i = 0; i < NUMOFDICE; i++) {
-            FreeDice.add(new Die(
+            freeDice.add(new Die(
                     new Vector2(((double) i + 1d) / ((double) NUMOFDICE + 1d) * (Renderer.WindowWidth - GUI.RIGHTPANELSIZE), (Renderer.WindowHeight - GUI.BOTTOMPANELSIZE) / 2),
                     new Rectangle(0, 0, Renderer.WindowWidth - GUI.RIGHTPANELSIZE, Renderer.WindowHeight - GUI.BOTTOMPANELSIZE)));
         }
-        Players.add(new Player("Josh"));
-        Players.add(new Player("Skynet", true));
+        players.add(new Player("Josh"));
+        players.add(new Player("Skynet", true));
     }
 
     @Override
-    public void Draw(Graphics g) {
-        GUI.Draw(g, this);        //Draw the GUI
-        for (Die aFreeDice : FreeDice) {    //Draw the free dice
+    public void draw(Graphics g) {
+        //draw the frame of the GUI
+        GUI.draw(g, this);
+
+        //draw the dice that haven't been selected
+        for (Die aFreeDice : freeDice) {
             aFreeDice.draw(g);
         }
-        for (int i = 0; i < SelectedDice.size(); i++) {
+
+        //draw a circle around the dice that have been selected
+        for (Die aSelectedDice : selectedDice) {
             g.setColor(Color.RED);
-            g.fillOval( //Make a circle around the dice, to indicate it has been selected
-                    (int) SelectedDice.get(i).getPosition().GetX() - (int) Die.HYPOT / 2,
-                    (int) SelectedDice.get(i).getPosition().GetY() - (int) Die.HYPOT / 2,
+            g.fillOval(
+                    (int) aSelectedDice.getPosition().getX() - (int) Die.HYPOT / 2,
+                    (int) aSelectedDice.getPosition().getY() - (int) Die.HYPOT / 2,
                     (int) Die.HYPOT,
                     (int) Die.HYPOT);
-            SelectedDice.get(i).draw(g);    //Draw the dice on top of the selection circle
+            aSelectedDice.draw(g);    //draw the dice on top of the selection circle
         }
     }
 
-    private void HandleKeys() {
-        if (Input.IsKeyPressed(KeyEvent.VK_ESCAPE)) {
-            Controller.Pop();
+    private void handleKeys() {
+        if (Input.isKeyPressed(KeyEvent.VK_ESCAPE)) {
+            controller.pop();
         }
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (Players.get(PlayerTurn).isAI()) {    //Don't allow any mouse presses while the AI is taking it's turn
+        if (players.get(playerTurn).isAI()) {    //Don't allow any mouse presses while the AI is taking it's turn
             return;
         }
-        if (!Rolling) {
-            if (e.getButton() == MouseEvent.BUTTON1 && !TurnStart) {
-                for (int i = 0; i < FreeDice.size(); i++) {
-                    if (Math.sqrt(Math.pow(FreeDice.get(i).getPosition().GetX() - e.getX(), 2) + Math.pow(FreeDice.get(i).getPosition().GetY() - e.getY(), 2)) < Die.HYPOT / 2) {
-                        SelectedDice.add(FreeDice.get(i));
-                        FreeDice.remove(i);
+        if (!rolling) {
+            if (e.getButton() == MouseEvent.BUTTON1 && !turnStart) {
+                //FIXME code duplication, extract method?
+                for (int i = 0; i < freeDice.size(); i++) {
+                    if (Math.sqrt(Math.pow(freeDice.get(i).getPosition().getX() - e.getX(), 2) + Math.pow(freeDice.get(i).getPosition().getY() - e.getY(), 2)) < Die.HYPOT / 2) {
+                        selectedDice.add(freeDice.get(i));
+                        freeDice.remove(i);
                         return;
                     }
                 }
-                for (int i = 0; i < SelectedDice.size(); i++) {
-                    if (Math.sqrt(Math.pow(SelectedDice.get(i).getPosition().GetX() - e.getX(), 2) + Math.pow(SelectedDice.get(i).getPosition().GetY() - e.getY(), 2)) < Die.HYPOT / 2) {
-                        FreeDice.add(SelectedDice.get(i));
-                        SelectedDice.remove(i);
+                for (int i = 0; i < selectedDice.size(); i++) {
+                    if (Math.sqrt(Math.pow(selectedDice.get(i).getPosition().getX() - e.getX(), 2) + Math.pow(selectedDice.get(i).getPosition().getY() - e.getY(), 2)) < Die.HYPOT / 2) {
+                        freeDice.add(selectedDice.get(i));
+                        selectedDice.remove(i);
                         return;
                     }
                 }
             }
             else if (e.getButton() == MouseEvent.BUTTON2) {
-                if (Players.get(PlayerTurn).getScore() == 0) {
-                    //if (RunningTotal + getScore(SelectedDice) < 500) {
+                if (players.get(playerTurn).getScore() == 0) {
+                    //if (runningTotal + getScore(selectedDice) < 500) {
                     //	return;
                     //}
                 }
-                RunningTotal += getScore(SelectedDice);
+                runningTotal += getScore(selectedDice);
                 endTurn();
             }
             else if (e.getButton() == MouseEvent.BUTTON3) {
-                if (TurnStart) {        //If this is the first roll of a hand
-                    TurnStart = false;
-                    ShakeDice();
+                if (turnStart) {        //If this is the first roll of a hand
+                    turnStart = false;
+                    shakeDice();
                 }
-                if (getScore(SelectedDice) != 0 && verifyHand(SelectedDice)) {
-                    RunningTotal += getScore(SelectedDice);
-                    CapturedDice.addAll(SelectedDice);
-                    SelectedDice.clear();
-                    for (int i = 0; i < CapturedDice.size(); i++) {
-                        CapturedDice.get(i).setAngle(0);
-                        CapturedDice.get(i).setPosition(new Vector2(100 + i * 150, Renderer.WindowHeight - GUI.BOTTOMPANELSIZE + 100));
+                if (getScore(selectedDice) != 0 && verifyHand(selectedDice)) {
+                    runningTotal += getScore(selectedDice);
+                    capturedDice.addAll(selectedDice);
+                    selectedDice.clear();
+
+                    for (int i = 0; i < capturedDice.size(); i++) {
+                        capturedDice.get(i).setAngle(0);
+                        capturedDice.get(i).setPosition(new Vector2(100 + i * 150, Renderer.WindowHeight - GUI.BOTTOMPANELSIZE + 100));
                     }
-                    if (FreeDice.isEmpty()) {
-                        NextHand();
+                    if (freeDice.isEmpty()) {
+                        nextHand();
                         GUI.notify("Extra Hand!");
                     }
                     else {
-                        ShakeDice();
+                        shakeDice();
                     }
                 }
             }
@@ -117,62 +124,62 @@ public class PlayState extends GameState {
     }
 
     @Override
-    public void Update() {
-        HandleKeys();        //Handle any input from the keyboard
-        if (Rolling) {        //If there are dice rolling
-            for (int i = 0; i < FreeDice.size(); i++) {        //Update all the dice
-                FreeDice.get(i).update();
+    public void update() {
+        handleKeys();        //Handle any input from the keyboard
+        if (rolling) {        //If there are dice rolling
+            for (int i = 0; i < freeDice.size(); i++) {        //update all the dice
+                freeDice.get(i).update();
             }
-            Rolling = false;    //Set rolling to false
-            for (int i = 0; i < FreeDice.size(); i++) {        //If any dice are still rolling, set rolling back to true
-                if (!FreeDice.get(i).isStopped()) {
-                    Rolling = true;
+            rolling = false;    //Set rolling to false
+
+            for (int i = 0; i < freeDice.size(); i++) {        //If any dice are still rolling, set rolling back to true
+                if (!freeDice.get(i).isStopped()) {
+                    rolling = true;
                     break;
                 }
             }
-            if (!Rolling && getScore(FreeDice) == 0) {    //If it was Rolling, and now is not and the hand is worthless WE HAVE A FARKLE LADIES AND GENTLEMAN
+            if (!rolling && getScore(freeDice) == 0) {    //If it was rolling, and now is not and the hand is worthless WE HAVE A FARKLE LADIES AND GENTLEMAN
                 GUI.notify("FARKLE");
-                RunningTotal = 0;
+                runningTotal = 0;
                 endTurn();
             }
         }
-        else if (Players.get(PlayerTurn).isAI()) {
-            if (TurnStart) {
-                TurnStart = false;
-                ShakeDice();
+        else if (players.get(playerTurn).isAI()) {
+            if (turnStart) {
+                turnStart = false;
+                shakeDice();
                 return;
             }
-            //THIS IS WHERE WE INTERFACE WITH AN AI CLASS TODO IMPLEMENT
-            boolean solved = false;
-            System.out.println(CapturedDice.size() + " " + SelectedDice + " " + FreeDice);
-            while (!solved) {
-                System.out.println(CapturedDice.size() + " " + SelectedDice + " " + FreeDice);
-                int num = (int) (Math.random() * FreeDice.size()) + 1;
-                for (int i = 0; i < num; i++) {
-                    SelectedDice.add(FreeDice.remove((int) (Math.random() * FreeDice.size())));
-                }
-                if (!verifyHand(SelectedDice)) {
-                    //FIXME debugging
-                    System.out.println("verifyHand check failed");
 
-                    FreeDice.addAll(SelectedDice);
-                    SelectedDice.clear();
+            //TODO THIS IS WHERE WE INTERFACE WITH AN AI CLASS
+            boolean solved = false;
+            System.out.println(capturedDice.size() + " " + selectedDice + " " + freeDice);
+            while (!solved) {
+                System.out.println(capturedDice.size() + " " + selectedDice + " " + freeDice);
+                int num = (int) (Math.random() * freeDice.size()) + 1;
+                for (int i = 0; i < num; i++) {
+                    selectedDice.add(freeDice.remove((int) (Math.random() * freeDice.size())));
                 }
-                if (getScore(SelectedDice) == 0) {
-                    FreeDice.addAll(SelectedDice);
-                    SelectedDice.clear();
+                if (!verifyHand(selectedDice)) {
+
+                    freeDice.addAll(selectedDice);
+                    selectedDice.clear();
+                }
+                if (getScore(selectedDice) == 0) {
+                    freeDice.addAll(selectedDice);
+                    selectedDice.clear();
                 }
                 else {
-                    System.out.println(CapturedDice.size() + " " + SelectedDice + " " + FreeDice);
-                    RunningTotal += getScore(SelectedDice);
-                    CapturedDice.addAll(SelectedDice);
-                    SelectedDice.clear();
-                    for (int i = 0; i < CapturedDice.size(); i++) {
-                        CapturedDice.get(i).setAngle(0);
-                        CapturedDice.get(i).setPosition(new Vector2(100 + i * 150, Renderer.WindowHeight - GUI.BOTTOMPANELSIZE + 100));
+                    System.out.println(capturedDice.size() + " " + selectedDice + " " + freeDice);
+                    runningTotal += getScore(selectedDice);
+                    capturedDice.addAll(selectedDice);
+                    selectedDice.clear();
+                    for (int i = 0; i < capturedDice.size(); i++) {
+                        capturedDice.get(i).setAngle(0);
+                        capturedDice.get(i).setPosition(new Vector2(100 + i * 150, Renderer.WindowHeight - GUI.BOTTOMPANELSIZE + 100));
                     }
-                    if (RunningTotal < 500) {
-                        ShakeDice();
+                    if (runningTotal < 500) {
+                        shakeDice();
                     }
                     else {
                         endTurn();
@@ -183,35 +190,35 @@ public class PlayState extends GameState {
         }
     }
 
-    private void ShakeDice() {
-        Rolling = true;
-        for (int i = 0; i < FreeDice.size(); i++) {
-            FreeDice.get(i).shake(100);
+    private void shakeDice() {
+        rolling = true;
+        for (int i = 0; i < freeDice.size(); i++) {
+            freeDice.get(i).shake(100);
         }
     }
 
     public void resetHand() {
-        FreeDice.clear();
-        SelectedDice.clear();
-        CapturedDice.clear();
+        freeDice.clear();
+        selectedDice.clear();
+        capturedDice.clear();
         for (int i = 0; i < NUMOFDICE; i++) {
-            FreeDice.add(new Die(
+            freeDice.add(new Die(
                     new Vector2(((double) i + 1d) / ((double) NUMOFDICE + 1d) * (Renderer.WindowWidth - GUI.RIGHTPANELSIZE), (Renderer.WindowHeight - GUI.BOTTOMPANELSIZE) / 2),
                     new Rectangle(0, 0, Renderer.WindowWidth - GUI.RIGHTPANELSIZE, Renderer.WindowHeight - GUI.BOTTOMPANELSIZE)));
         }
     }
 
-    private void NextHand() {
-        System.out.println("Player " + Players.get(PlayerTurn).getName() + " earned " + RunningTotal + " Points");
-        Players.get(PlayerTurn).FinishTurn(RunningTotal);        //Give the player the points they earned
-        RunningTotal = 0;
-        TurnStart = true;
+    private void nextHand() {
+        System.out.println("Player " + players.get(playerTurn).getName() + " earned " + runningTotal + " Points");
+        players.get(playerTurn).finishTurn(runningTotal);        //Give the player the points they earned
+        runningTotal = 0;
+        turnStart = true;
         resetHand();
     }
 
     private void endTurn() {
-        NextHand();
-        PlayerTurn = (PlayerTurn + 1) % Players.size();
+        nextHand();
+        playerTurn = (playerTurn + 1) % players.size();
     }
 
     //FIXME test
@@ -226,7 +233,7 @@ public class PlayState extends GameState {
             //we don't need to pay attention to non-existent die-values
             if (oc[i] > 0) {
                 //ones and twos of values other than 1 or 5 are invalid except in scenarios
-                //that involve using all 6 dice
+                //that involve using all 6 dice and will have been handled separately
                 if (oc[i] < 3 && (i != 0 && i != 4)) {
                     return false;
                 }
@@ -286,7 +293,7 @@ public class PlayState extends GameState {
             }
         }
         if (count == 6) {
-            return 1500;        //Special case, this will use the whole roll, leaving no other points avalible
+            return 1500;        //Special case, this will use the whole roll, leaving no other points available
         }
         //ONLY PAIRS CHECK
         count = 0;
@@ -296,7 +303,7 @@ public class PlayState extends GameState {
             }
         }
         if (count == 3) {        //If we found 3 pairs
-            return 1500;        //Special case, this will use the whole roll, leaving no other points avalible
+            return 1500;        //Special case, this will use the whole roll, leaving no other points available
         }
         //FULL HOUSE CHECK
         count = 0;
@@ -308,7 +315,7 @@ public class PlayState extends GameState {
                 count++;
             }
             if (count == 4) {
-                return 1500;        //Special case, this will use the whole roll, leaving no other points avalible
+                return 1500;        //Special case, this will use the whole roll, leaving no other points available
             }
         }
         //ONLY TRIPLETS CHECK
@@ -319,29 +326,29 @@ public class PlayState extends GameState {
             }
         }
         if (count == 2) {    //If we found 2 triplets
-            return 2500;        //Special case, this will use the whole roll, leaving no other points avalible
+            return 2500;        //Special case, this will use the whole roll, leaving no other points available
         }
 
         return score;
     }
 
     public ArrayList<Player> getPlayers() {
-        return Players;
+        return players;
     }
 
     public int getPlayerTurn() {
-        return PlayerTurn;
+        return playerTurn;
     }
 
     public int getRunningTotal() {
-        return RunningTotal;
+        return runningTotal;
     }
 
     public int getCurrentSelectionScore() {
-        return getScore(SelectedDice);
+        return getScore(selectedDice);
     }
 
     public ArrayList<Die> getCapturedDice() {
-        return CapturedDice;
+        return capturedDice;
     }
 }

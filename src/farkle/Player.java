@@ -3,34 +3,34 @@ package farkle;
 public class Player {
 
     private final String name;
-    private int Score;
-    private int Farkles;
-    private boolean AIControlled;
+    private int score;
+    private int farkles;
+    private boolean isAI;
 
     public Player(String name) {
         this.name = name;
     }
 
-    public Player(String name, boolean AIControlled) {
+    public Player(String name, boolean isAI) {
         this.name = name;
-        this.AIControlled = AIControlled;
+        this.isAI = isAI;
     }
 
-    public void FinishTurn(int PointsScored) {
-        if (PointsScored == 0) {
-            Farkles++;
+    public void finishTurn(int pointsScored) {
+        if (pointsScored == 0) {
+            farkles++;
         }
         else {
-            Score += PointsScored;
+            score += pointsScored;
         }
     }
 
     public int getScore() {
-        return Score;
+        return score;
     }
 
-    public int getFarkels() {
-        return Farkles;
+    public int getFarkles() {
+        return farkles;
     }
 
     public String getName() {
@@ -38,6 +38,6 @@ public class Player {
     }
 
     public boolean isAI() {
-        return AIControlled;
+        return isAI;
     }
 }
