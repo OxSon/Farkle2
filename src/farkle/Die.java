@@ -181,7 +181,7 @@ public class Die {
     /**
      * This is the method used to make the dice move
      *
-     * @param Intensity
+     * @param Intensity how vigorously the dice shake
      */
     public void shake(double Intensity) {
         double newAngle = (Math.random()) * Math.PI * 2;

@@ -8,7 +8,6 @@ public class GamePanel extends JPanel implements Runnable {
     private final StateManager controller;
 
     private final int FPS = 60;    //This is the Target FPS, not actual
-    private final long targetTime = 1000 / FPS;
 
     public GamePanel(StateManager controller) {
         this.controller = controller;
@@ -31,6 +30,7 @@ public class GamePanel extends JPanel implements Runnable {
             repaint();
 
             elapsed = System.nanoTime() - start;
+            long targetTime = 1000 / FPS;
             wait = targetTime - elapsed / 1000000;
 
             if (wait <= 0) {

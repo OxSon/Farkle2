@@ -127,13 +127,13 @@ public class PlayState extends GameState {
     public void update() {
         handleKeys();        //Handle any input from the keyboard
         if (rolling) {        //If there are dice rolling
-            for (int i = 0; i < freeDice.size(); i++) {        //update all the dice
-                freeDice.get(i).update();
+            for (Die aFreeDice : freeDice) {        //update all the dice
+                aFreeDice.update();
             }
             rolling = false;    //Set rolling to false
 
-            for (int i = 0; i < freeDice.size(); i++) {        //If any dice are still rolling, set rolling back to true
-                if (!freeDice.get(i).isStopped()) {
+            for (Die aFreeDice : freeDice) {        //If any dice are still rolling, set rolling back to true
+                if (!aFreeDice.isStopped()) {
                     rolling = true;
                     break;
                 }
@@ -192,8 +192,8 @@ public class PlayState extends GameState {
 
     private void shakeDice() {
         rolling = true;
-        for (int i = 0; i < freeDice.size(); i++) {
-            freeDice.get(i).shake(100);
+        for (Die aFreeDice : freeDice) {
+            aFreeDice.shake(100);
         }
     }
 
@@ -225,8 +225,8 @@ public class PlayState extends GameState {
     public static boolean verifyHand(ArrayList<Die> Dice) {
         //build record of how many of each die-value we have
         int[] oc = new int[Die.MAXVALUE];
-        for (int i = 0; i < Dice.size(); i++) {
-            oc[Dice.get(i).getValue() - 1]++;
+        for (Die aDice : Dice) {
+            oc[aDice.getValue() - 1]++;
         }
         //test failure conditions
         for (int i = 0; i < Dice.size(); i++) {
@@ -247,8 +247,8 @@ public class PlayState extends GameState {
         int score = 0;
         int[] oc = new int[Die.MAXVALUE];
 
-        for (int i = 0; i < dice.size(); i++) {
-            oc[dice.get(i).getValue() - 1]++;
+        for (Die aDice : dice) {
+            oc[aDice.getValue() - 1]++;
         }
         if (oc[0] == 1) {
             score += 100;
@@ -274,21 +274,21 @@ public class PlayState extends GameState {
         if (oc[5] == 3) {
             score += 600;
         }
-        for (int i = 0; i < oc.length; i++) {
-            if (oc[i] == 4) {
+        for (int anOc4 : oc) {
+            if (anOc4 == 4) {
                 score += 1000;
             }
-            if (oc[i] == 5) {
+            if (anOc4 == 5) {
                 score += 2000;
             }
-            if (oc[i] == 6) {
+            if (anOc4 == 6) {
                 score += 3000;
             }
         }
         //STRAIGHT CHECK
         int count = 0;
-        for (int i = 0; i < oc.length; i++) {
-            if (oc[i] == 1) {
+        for (int anOc3 : oc) {
+            if (anOc3 == 1) {
                 count++;
             }
         }
@@ -297,8 +297,8 @@ public class PlayState extends GameState {
         }
         //ONLY PAIRS CHECK
         count = 0;
-        for (int i = 0; i < oc.length; i++) {
-            if (oc[i] == 2) {
+        for (int anOc2 : oc) {
+            if (anOc2 == 2) {
                 count++;
             }
         }
@@ -307,11 +307,11 @@ public class PlayState extends GameState {
         }
         //FULL HOUSE CHECK
         count = 0;
-        for (int i = 0; i < oc.length; i++) {
-            if (oc[i] == 4) {
+        for (int anOc1 : oc) {
+            if (anOc1 == 4) {
                 count += 3;
             }
-            if (oc[i] == 2) {
+            if (anOc1 == 2) {
                 count++;
             }
             if (count == 4) {
@@ -320,8 +320,8 @@ public class PlayState extends GameState {
         }
         //ONLY TRIPLETS CHECK
         count = 0;
-        for (int i = 0; i < oc.length; i++) {
-            if (oc[i] == 3) {
+        for (int anOc : oc) {
+            if (anOc == 3) {
                 count++;
             }
         }

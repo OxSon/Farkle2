@@ -5,16 +5,16 @@ import java.awt.*;
 
 public class Button {
 
-    final Rectangle rect;
-    final String text;
+    private final Rectangle rect;
+    private final String text;
 
-    final Color border;
-    final Color inner;
-    final Color fade;
-    int opacity;
+    private final Color border;
+    private final Color inner;
+    private final Color fade;
+    private int opacity;
 
-    final int borderWidth;
-    final int fontSize;
+    private final int borderWidth;
+    private final int fontSize;
 
     public Button(Rectangle rect, String text, Color border, Color inner, Color fade, int borderWidth, int fontSize) {
         this.rect = rect;
