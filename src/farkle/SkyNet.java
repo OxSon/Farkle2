@@ -22,7 +22,7 @@ public class SkyNet {
     /**
      * @param risk risk tolerance factor of AI
      */
-    public SkyNet(double risk) {
+    private SkyNet(double risk) {
         riskTolerance = risk;
     }
 
@@ -33,7 +33,7 @@ public class SkyNet {
      * @param freeDice dice available for choosing
      * @return the dice chosen
      */
-    public static ArrayList<Die> selectDice(ArrayList<Die> freeDice) {
+    public static ArrayList<Die> selectDice(int score, ArrayList<Die> freeDice) {
         return null;
     }
 
