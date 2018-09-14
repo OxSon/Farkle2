@@ -88,11 +88,11 @@ public class PlayState extends GameState {
                     }
                 }
             }
-            else if (e.getButton() == MouseEvent.BUTTON2) {
+            else if (e.getButton() == MouseEvent.BUTTON2) {		//TODO MAKE THIS NOT RIGHT MOUSE FOR NEXT ROLL
                 if (players.get(playerTurn).getScore() == 0) {
-                    //if (runningTotal + getScore(selectedDice) < 500) {
-                    //	return;
-                    //}
+                    if (runningTotal + getScore(selectedDice) < 500) {
+                    	return;
+                    }
                 }
                 runningTotal += getScore(selectedDice);
                 endTurn();
@@ -245,46 +245,38 @@ public class PlayState extends GameState {
 
     public static int getScore(ArrayList<Die> dice) {
         int score = 0;
-        int[] oc = new int[Die.MAXVALUE];
+        int[] oc = new int[Die.MAXVALUE];	//Occurance Count
 
         for (Die aDice : dice) {
             oc[aDice.getValue() - 1]++;
         }
-        if (oc[0] == 1) {
-            score += 100;
-        }
-        if (oc[4] == 1) {
-            score += 50;
-        }
-        if (oc[0] == 3) {
-            score += 300;
-        }
-        if (oc[1] == 3) {
-            score += 200;
-        }
-        if (oc[2] == 3) {
-            score += 300;
-        }
-        if (oc[3] == 3) {
-            score += 400;
-        }
-        if (oc[4] == 3) {
-            score += 500;
-        }
-        if (oc[5] == 3) {
-            score += 600;
-        }
+		
         for (int anOc4 : oc) {
             if (anOc4 == 4) {
                 score += 1000;
-            }
-            if (anOc4 == 5) {
+				anOC4 -= 4;
+				for (int anOc2 : oc){	//Check for a pair to determine if its a full house
+					if (anOc2 == 2){
+						return 1500;	//FULL HOSUSE
+					}
+				}
+            } else if (anOc4 == 5) {
                 score += 2000;
-            }
-            if (anOc4 == 6) {
-                score += 3000;
+				anOc4 -= 5;
+            } else if (anOc4 == 6) {
+                return 3000;	//Max points
             }
         }
+        score += 100 * oc[0];	//Handle Single Ones
+        score += 50 * oc[4];	//Handle Single Fives
+		
+        //We don't care about Triple Ones, as it adds up to the same points as single ones
+		
+		score += 200 * (oc[1] / 3);	//Handle Triple twos
+		score += 300 * (oc[2] / 3);	//Handle Triple threes
+		score += 400 * (oc[3] / 3);	//Handle Triple fours
+		score += 350 * (oc[4] / 3);	//Handle Triple fives	SPECIAL MATH We would already get 150 from the single fives scoring
+		score += 600 * (oc[5] / 3);	//Handle Triple sixes
         //STRAIGHT CHECK
         int count = 0;
         for (int anOc3 : oc) {
@@ -304,19 +296,6 @@ public class PlayState extends GameState {
         }
         if (count == 3) {        //If we found 3 pairs
             return 1500;        //Special case, this will use the whole roll, leaving no other points available
-        }
-        //FULL HOUSE CHECK
-        count = 0;
-        for (int anOc1 : oc) {
-            if (anOc1 == 4) {
-                count += 3;
-            }
-            if (anOc1 == 2) {
-                count++;
-            }
-            if (count == 4) {
-                return 1500;        //Special case, this will use the whole roll, leaving no other points available
-            }
         }
         //ONLY TRIPLETS CHECK
         count = 0;
