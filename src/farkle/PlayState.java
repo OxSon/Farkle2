@@ -88,10 +88,10 @@ public class PlayState extends GameState {
                     }
                 }
             }
-            else if (e.getButton() == MouseEvent.BUTTON2) {		//TODO MAKE THIS NOT RIGHT MOUSE FOR NEXT ROLL
+            else if (e.getButton() == MouseEvent.BUTTON2) {        //TODO MAKE THIS NOT RIGHT MOUSE FOR NEXT ROLL
                 if (players.get(playerTurn).getScore() == 0) {
                     if (runningTotal + getScore(selectedDice) < 500) {
-                    	return;
+                        return;
                     }
                 }
                 runningTotal += getScore(selectedDice);
@@ -245,38 +245,40 @@ public class PlayState extends GameState {
 
     public static int getScore(ArrayList<Die> dice) {
         int score = 0;
-        int[] oc = new int[Die.MAXVALUE];	//Occurance Count
+        int[] oc = new int[Die.MAXVALUE];    //Occurance Count
 
         for (Die aDice : dice) {
             oc[aDice.getValue() - 1]++;
         }
-		
+
         for (int anOc4 : oc) {
             if (anOc4 == 4) {
                 score += 1000;
                 anOc4 -= 4;
-				for (int anOc2 : oc){	//Check for a pair to determine if its a full house
-					if (anOc2 == 2){
-						return 1500;	//FULL HOSUSE
-					}
-				}
-            } else if (anOc4 == 5) {
+                for (int anOc2 : oc) {    //Check for a pair to determine if its a full house
+                    if (anOc2 == 2) {
+                        return 1500;    //FULL HOSUSE
+                    }
+                }
+            }
+            else if (anOc4 == 5) {
                 score += 2000;
-				anOc4 -= 5;
-            } else if (anOc4 == 6) {
-                return 3000;	//Max points
+                anOc4 -= 5;
+            }
+            else if (anOc4 == 6) {
+                return 3000;    //Max points
             }
         }
-        score += 100 * oc[0];	//Handle Single Ones
-        score += 50 * oc[4];	//Handle Single Fives
-		
+        score += 100 * oc[0];    //Handle Single Ones
+        score += 50 * oc[4];    //Handle Single Fives
+
         //We don't care about Triple Ones, as it adds up to the same points as single ones
-		
-		score += 200 * (oc[1] / 3);	//Handle Triple twos
-		score += 300 * (oc[2] / 3);	//Handle Triple threes
-		score += 400 * (oc[3] / 3);	//Handle Triple fours
-		score += 350 * (oc[4] / 3);	//Handle Triple fives	SPECIAL MATH We would already get 150 from the single fives scoring
-		score += 600 * (oc[5] / 3);	//Handle Triple sixes
+
+        score += 200 * (oc[1] / 3);    //Handle Triple twos
+        score += 300 * (oc[2] / 3);    //Handle Triple threes
+        score += 400 * (oc[3] / 3);    //Handle Triple fours
+        score += 350 * (oc[4] / 3);    //Handle Triple fives	SPECIAL MATH We would already get 150 from the single fives scoring
+        score += 600 * (oc[5] / 3);    //Handle Triple sixes
         //STRAIGHT CHECK
         int count = 0;
         for (int anOc3 : oc) {
