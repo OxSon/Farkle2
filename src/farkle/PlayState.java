@@ -254,7 +254,7 @@ public class PlayState extends GameState {
         for (int anOc4 : oc) {
             if (anOc4 == 4) {
                 score += 1000;
-				anOC4 -= 4;
+                anOc4 -= 4;
 				for (int anOc2 : oc){	//Check for a pair to determine if its a full house
 					if (anOc2 == 2){
 						return 1500;	//FULL HOSUSE
