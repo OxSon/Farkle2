@@ -148,6 +148,7 @@ public class GUI {
 				Renderer.WindowWidth - RIGHTPANELSIZE / 2, Renderer.WindowHeight - SCORINGPANELHEIGHT,
 				RIGHTPANELSIZE, BOTTOMPANELSIZE);
 		g.setFont(new Font("TimesRoman", Font.BOLD, 30));
+		g.setColor(Color.BLACK);
 		drawStringWithCenter("SCORING GUIDE", r.getX(), r.getY() + 30, g);
 		int Offset = 50;
 		g.setFont(new Font("TimesRoman", Font.BOLD, 14));
