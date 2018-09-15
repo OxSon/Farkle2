@@ -175,6 +175,7 @@ public class Die {
      * @param Intensity how vigorously the dice shake
      */
     public void shake(double Intensity) {
+		roll();	//Always make sure it is a new value in case of a 0 delta Angle
         double newAngle = (Math.random()) * Math.PI * 2;
         deltaAngle = (Math.random() - .5) * 10;
         deltaPosition = new Vector2(Math.cos(newAngle) * Intensity, Math.sin(newAngle) * Intensity);
