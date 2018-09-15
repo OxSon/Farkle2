@@ -1,6 +1,7 @@
 package farkle;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * @author alec mills
@@ -24,7 +25,7 @@ public class SkyNet {
             int score = PlayState.getScore(dice);
             int numFreeDice = 6 - dice.size();
 
-            weights[i] = DataBase.queryStrategyTable(score, numFreeDice).weight;
+            weights[i] = Objects.requireNonNull(DataBase.queryStrategyTable(score, numFreeDice)).weight;
             i++;
         }
 
@@ -46,10 +47,9 @@ public class SkyNet {
     }
 
     /**
-     *
-     * @param score
-     * @param freeDice
-     * @return
+     * finds all legal combinations of scoring dice given a roll
+     * @param freeDice the dice that were rolled
+     * @return an arraylist of arraylists of dice
      */
     public static ArrayList<ArrayList<Die>> getOptions(ArrayList<Die> freeDice) {
         ArrayList<ArrayList<Die>> options = new ArrayList<>();
@@ -78,6 +78,6 @@ public class SkyNet {
      */
     public static boolean rollAgain(int score, int numFreeDice) {
         Tuple response = DataBase.queryStrategyTable(score, numFreeDice);
-        return response.roll;
+        return Objects.requireNonNull(response).roll;
     }
 }

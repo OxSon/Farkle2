@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Scanner;
 
 /**
@@ -34,10 +35,7 @@ public class DataBase {
             else throw new IllegalArgumentException("Score/N Dice pairing is unreachable " +
                     "under valid Farkle play, please check values");
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        } catch (IllegalArgumentException e) {
+        } catch (SQLException | IllegalArgumentException e) {
             e.printStackTrace();
             return null;
         }
@@ -53,7 +51,7 @@ public class DataBase {
             statement.append("CREATE TABLE ");
             statement.append(name);
             statement.append(" (");
-            //accomodate varargs
+            //accommodate varargs
             for (String column : columns) {
                 statement.append(column);
                 statement.append(", ");
@@ -138,7 +136,7 @@ public class DataBase {
         fillStrategyTable();
 
         Tuple response = queryStrategyTable(200, 4);
-        System.out.println(response.weight);
+        System.out.println(Objects.requireNonNull(response).weight);
         System.out.println(response.roll);
     }
 }
