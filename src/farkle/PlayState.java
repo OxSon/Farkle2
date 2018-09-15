@@ -172,7 +172,8 @@ public class PlayState extends GameState {
 		}
 	}
 
-	public void resetHand() {
+	private void nextHand() {
+		turnStart = true;
 		freeDice.clear();
 		selectedDice.clear();
 		capturedDice.clear();
@@ -183,15 +184,10 @@ public class PlayState extends GameState {
 		}
 	}
 
-	private void nextHand() {
+	private void endTurn() {
 		System.out.println("Player " + players.get(playerTurn).getName() + " earned " + runningTotal + " Points");
 		players.get(playerTurn).finishTurn(runningTotal);        //Give the player the points they earned
 		runningTotal = 0;
-		turnStart = true;
-		resetHand();
-	}
-
-	private void endTurn() {
 		nextHand();
 		playerTurn = (playerTurn + 1) % players.size();
 	}
