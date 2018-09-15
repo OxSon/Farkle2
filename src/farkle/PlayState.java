@@ -139,9 +139,9 @@ public class PlayState extends GameState {
 					selectedDice.add(freeDice.remove((int) (Math.random() * freeDice.size())));
 				}
 				if (!verifyHand(selectedDice)) {
-
 					freeDice.addAll(selectedDice);
 					selectedDice.clear();
+					continue;
 				}
 				if (getScore(selectedDice) == 0) {
 					freeDice.addAll(selectedDice);
