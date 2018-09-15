@@ -67,7 +67,7 @@ public class SkyNet {
                 if (!rollAgain(state.getRunningTotal(), freeDice.size())) {
                     done = true;
                     state.bankPoints(state.getCurrentCapturedScore());
-                    state.nextHand();
+                    state.endTurn();
                     return;
                 }
 
@@ -78,10 +78,13 @@ public class SkyNet {
             //FIXME how should this be handled
             else if (freeDice.size() == 0) {
                 state.clearAllDice();
+                state.nextHand();
                 GUI.notify("EXTRA HAND");
             }
             else {
                 GUI.notify("FARKLE");
+                state.shakeDice();
+                state.endTurn();
                 return;
             }
         }
