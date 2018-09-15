@@ -84,12 +84,12 @@ public class GUI {
 		}
 		try {
 			//draw the dice that haven't been selected
-			ArrayList<Die> freeDice = playState.getFreeDice();
+			ArrayList<Die> freeDice = (ArrayList<Die>)playState.getFreeDice().clone();
 			for (Die aFreeDice : freeDice) {
 				aFreeDice.draw(g);
 			}
 			//draw a circle around the dice that have been selected
-			ArrayList<Die> selectedDice = playState.getSelectedDice();
+			ArrayList<Die> selectedDice = (ArrayList<Die>)playState.getSelectedDice().clone();
 			for (Die aSelectedDice : selectedDice) {
 				g.setColor(Color.RED);
 				g.fillOval(
@@ -100,7 +100,7 @@ public class GUI {
 				aSelectedDice.draw(g);    //draw the dice on top of the selection circle
 			}
 			//Draw all the dice that have been selected and then moved off the table
-			ArrayList<Die> capturedDice = playState.getCapturedDice();
+			ArrayList<Die> capturedDice = (ArrayList<Die>)playState.getCapturedDice().clone();
 			for (Die aCapturedDice : capturedDice) {
 				aCapturedDice.draw(g);
 			}
