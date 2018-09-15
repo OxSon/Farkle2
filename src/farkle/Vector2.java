@@ -48,6 +48,14 @@ public class Vector2 {
         x *= Factor;
         y *= Factor;
     }
+	
+	public Vector2 getAddedVector(Vector2 o){
+		return new Vector2(x + o.x, y + o.y);
+	}
+	
+	public double getMagnitude(){
+		return Math.hypot(x, y);
+	}
 
     @Override
     public String toString() {
