@@ -55,7 +55,8 @@ public class SkyNet {
         ArrayList<ArrayList<Die>> options = new ArrayList<>();
         for (int i = 1; i < 64; i++) {
             ArrayList<Die> set = new ArrayList<>();
-            String binary = Integer.toString(i, 2);
+            //FIXME needs to include leading zeros
+            String binary = String.format("%6s", Integer.toBinaryString(i)).replace(' ', '0');
             for (int j = 0; j < 6; j++) {
                 if (binary.charAt(j) == '1') {
                     set.add(freeDice.get(j));
@@ -68,7 +69,6 @@ public class SkyNet {
         return options;
     }
 
-
     /**
      * AI chooses whether to roll again or bank points
      *
@@ -79,5 +79,28 @@ public class SkyNet {
     public static boolean rollAgain(int score, int numFreeDice) {
         Tuple response = DataBase.queryStrategyTable(score, numFreeDice);
         return Objects.requireNonNull(response).roll;
+    }
+
+    /**
+     * testing
+     *
+     * @param args
+     */
+    public static void main(String[] args) {
+        ArrayList<Die> freeDice = new ArrayList<>();
+        freeDice.add(new Die(3));
+        freeDice.add(new Die(6));
+        freeDice.add(new Die(6));
+        freeDice.add(new Die(6));
+        freeDice.add(new Die(5));
+        freeDice.add(new Die(1));
+
+        ArrayList<ArrayList<Die>> options = getOptions(freeDice);
+        for (ArrayList<Die> combo : options) {
+            for (Die die : combo) {
+                System.out.println(die.getValue());
+            }
+            System.out.println();
+        }
     }
 }

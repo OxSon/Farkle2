@@ -224,21 +224,23 @@ public class PlayState extends GameState {
     public static boolean verifyHand(ArrayList<Die> Dice) {
         //build record of how many of each die-value we have
         int[] oc = new int[Die.MAXVALUE];
-        for (Die aDice : Dice) {
-            oc[aDice.getValue() - 1]++;
+        for (Die die : Dice) {
+            oc[die.getValue() - 1]++;
         }
         //test failure conditions
-        for (int i = 0; i < Dice.size(); i++) {
+        for (int i = 0; i < Die.MAXVALUE; i++) {
             //we don't need to pay attention to non-existent die-values
             if (oc[i] > 0) {
                 //ones and twos of values other than 1 or 5 are invalid except in scenarios
-                //that involve using all 6 dice and will have been handled separately
+                //that involve using all 6 dice that will have been handled separately
                 if (oc[i] < 3 && (i != 0 && i != 4)) {
+                    //FIXME debug
+                    System.out.println("Hand FAILED test");
                     return false;
                 }
             }
         }
-
+        System.out.println("Hand PASSED test");
         return true;
     }
 
