@@ -21,11 +21,18 @@ public class DataBase {
                 }
             }
 
-            int weight = Integer.valueOf(response.get(0));
-            boolean roll = Boolean.valueOf(response.get(1));
-            return new Tuple(weight, roll);
+            if (response.size() > 0) {
+                int weight = Integer.valueOf(response.get(0));
+                boolean roll = Boolean.valueOf(response.get(1));
+                return new Tuple(weight, roll);
+            }
+            else throw new IllegalArgumentException("Score/N Dice pairing is unreachable " +
+                    "under valid Farkle play, please check values");
 
         } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
             return null;
         }

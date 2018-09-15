@@ -15,17 +15,56 @@ public class SkyNet {
      * @param options dice-combinations to consider
      * @return the dice chosen
      */
-    public static ArrayList<Die> selectDice(ArrayList<Die[]> options) {
-        return null;
+    public static ArrayList<Die> selectDice(ArrayList<ArrayList<Die>> options) {
+        int[] weights = new int[options.size()];
+
+        int i = 0;
+        for (ArrayList<Die> dice : options) {
+            int score = PlayState.getScore(dice);
+            int numFreeDice = 6 - dice.size();
+
+            weights[i] = DataBase.queryStrategyTable(score, numFreeDice).weight;
+            i++;
+        }
+
+        return options.get(maxValueIndex(weights));
     }
 
+    private static int maxValueIndex(int[] values) {
+        int max = Integer.MIN_VALUE;
+        int index = 0;
+
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] > max) {
+                max = values[i];
+                index = i;
+            }
+        }
+
+        return index;
+    }
 
     /**
-     * TODO what is best DS for this? I need a grow-able list of objects which are themselves lists/collections
-     * returns optional choices, i.e. reachable from the current roll
+     *
+     * @param score
+     * @param freeDice
+     * @return
      */
-    private static ArrayList<Die[]> findNeighbors(int score, ArrayList<Die> freeDice) {
-        return null;
+    private static ArrayList<ArrayList<Die>> getOptions(int score, ArrayList<Die> freeDice) {
+        ArrayList<ArrayList<Die>> options = new ArrayList<>();
+        for (int i = 1; i < 64; i++) {
+            ArrayList<Die> set = new ArrayList<>();
+            String binary = Integer.toString(i, 2);
+            for (int j = 0; j < 6; j++) {
+                if (binary.charAt(j) == '1') {
+                    set.add(freeDice.get(j));
+                }
+            }
+            if (PlayState.verifyHand(set)) {
+                options.add(set);
+            }
+        }
+        return options;
     }
 
 
