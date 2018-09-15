@@ -68,7 +68,8 @@ public class SkyNet {
                     state.nextHand();
                 }
 
-                state.clearAllDice();
+                state.clearSelectedDice();
+                state.clearCapturedDice();
                 state.shakeDice();
             }
             //FIXME how should this be handled
@@ -90,7 +91,7 @@ public class SkyNet {
             ArrayList<Die> set = new ArrayList<>();
             //FIXME needs to include leading zeros
             String binary = String.format("%6s", Integer.toBinaryString(i)).replace(' ', '0');
-            for (int j = 0; j < 6; j++) {
+            for (int j = 0; j < freeDice.size(); j++) {
                 if (binary.charAt(j) == '1') {
                     set.add(freeDice.get(j));
                 }
