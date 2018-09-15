@@ -142,47 +142,52 @@ public class PlayState extends GameState {
 			}
 
 			//TODO THIS IS WHERE WE INTERFACE WITH AN AI CLASS
-			boolean solved = false;
-			while (!solved) {
-				int num = (int) (Math.random() * freeDice.size()) + 1;
-				for (int i = 0; i < num; i++) {
-					selectedDice.add(freeDice.remove((int) (Math.random() * freeDice.size())));
-				}
-				if (!verifyHand(selectedDice)) {
-					freeDice.addAll(selectedDice);
-					selectedDice.clear();
-					continue;
-				}
-				if (getScore(selectedDice) == 0) {
-					freeDice.addAll(selectedDice);
-					selectedDice.clear();
-				} else {
-					runningTotal += getScore(selectedDice);
-					capturedDice.addAll(selectedDice);
-					selectedDice.clear();
-					for (int i = 0; i < capturedDice.size(); i++) {
-						capturedDice.get(i).setAngle(0);
-						capturedDice.get(i).setPosition(new Vector2(100 + i * 150, Renderer.WindowHeight - GUI.BOTTOMPANELSIZE + 100));
-					}
-					if (runningTotal < 500) {
-						shakeDice();
-					} else {
-						endTurn();
-					}
-					solved = true;
-				}
-			}
+            SkyNet.takeTurn(this);
 		}
 	}
 
-	private void shakeDice() {
+    public void setCapturedDice(ArrayList<Die> dice) {
+        for (Die die : dice) {
+            freeDice.remove(die);
+            capturedDice.add(die);
+        }
+    }
+
+    public void clearAllDice() {
+        clearCapturedDice();
+        clearSelectedDice();
+        clearFreeDice();
+    }
+
+    public void clearCapturedDice() {
+        capturedDice.clear();
+    }
+
+    public void clearSelectedDice() {
+        selectedDice.clear();
+    }
+
+    public void clearFreeDice() {
+        freeDice.clear();
+    }
+
+    public void addRunningTotal(int score) {
+        runningTotal += score;
+    }
+
+    public void bankPoints(int score) {
+        getActivePlayer().finishTurn(score);
+    }
+
+
+    public void shakeDice() {
 		rolling = true;
 		for (Die aFreeDice : freeDice) {
 			aFreeDice.shake(100);
 		}
 	}
 
-	private void nextHand() {
+    public void nextHand() {
 		turnStart = true;
 		freeDice.clear();
 		selectedDice.clear();
@@ -196,7 +201,7 @@ public class PlayState extends GameState {
 
 	private void endTurn() {
 		System.out.println("Player " + players.get(playerTurn).getName() + " earned " + runningTotal + " Points");
-		players.get(playerTurn).finishTurn(runningTotal);        //Give the player the points they earned
+        getActivePlayer().finishTurn(runningTotal);        //Give the player the points they earned
 		runningTotal = 0;
 		nextHand();
 		playerTurn = (playerTurn + 1) % players.size();
@@ -307,6 +312,10 @@ public class PlayState extends GameState {
 		return getScore(selectedDice);
 	}
 
+    public int getCurrentCapturedScore() {
+        return getScore(capturedDice);
+    }
+
 	public ArrayList<Die> getFreeDice() {
 		return freeDice;
 	}
@@ -318,5 +327,8 @@ public class PlayState extends GameState {
 	public ArrayList<Die> getCapturedDice() {
 		return capturedDice;
 	}
->>>>>>> master
+
+    public Player getActivePlayer() {
+        return players.get(playerTurn);
+    }
 }
