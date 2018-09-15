@@ -51,11 +51,19 @@ public class SkyNet {
         state.clearSelectedDice();
         state.clearCapturedDice();
 
-        while (!done) {
             ArrayList<Die> freeDice = state.getFreeDice();
 
             if (freeDice.size() > 0 && PlayState.getScore(freeDice) != 0) {
                 ArrayList<ArrayList<Die>> options = getOptions(freeDice);
+
+                int i = 0;
+                for (ArrayList<Die> set : options) {
+                    System.out.printf("Option %d:%n", i++);
+                    for (Die die : set) {
+                        System.out.print(die.getValue() + " ");
+                    }
+                    System.out.println();
+                }
 
                 ArrayList<Die> selection = selectDice(options);
                 state.setSelectedDice(selection);
@@ -84,17 +92,8 @@ public class SkyNet {
             else if (freeDice.size() == 0) {
                 state.clearAllDice();
                 state.nextHand();
-                GUI.notify("EXTRA HAND");
+                takeTurn(state);
             }
-            else {
-                GUI.notify("FARKLE");
-                state.shakeDice();
-                state.endTurn();
-                return;
-            }
-        }
-
-        return;
     }
 
     /**
@@ -104,9 +103,10 @@ public class SkyNet {
      */
     public static ArrayList<ArrayList<Die>> getOptions(ArrayList<Die> freeDice) {
         ArrayList<ArrayList<Die>> options = new ArrayList<>();
+
         for (int i = 1; i < 64; i++) {
             ArrayList<Die> set = new ArrayList<>();
-            //FIXME needs to include leading zeros
+
             String binary = String.format("%6s", Integer.toBinaryString(i)).replace(' ', '0');
             for (int j = 0; j < freeDice.size(); j++) {
                 if (binary.charAt(j) == '1') {
