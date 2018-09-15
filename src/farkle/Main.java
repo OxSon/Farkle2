@@ -19,4 +19,14 @@ public class Main {
             }
         }, 0, 16);
     }
+
+    /**
+     * build database
+     */
+    static {
+        System.out.println("Working as expected");
+        DataBase.dropStrategyTable();
+        DataBase.createStrategyTable();
+        DataBase.fillStrategyTable();
+    }
 }

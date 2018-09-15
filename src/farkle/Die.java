@@ -33,6 +33,17 @@ public class Die {
         roll();
     }
 
+    /**
+     * FIXME
+     * constructor for debugging
+     */
+    public Die(int value) {
+        bound = new Rectangle(10, 10, 10, 10);
+        position = new Vector2(0, 0);
+        deltaPosition = new Vector2();
+        this.value = value;
+    }
+
     public void setAngle(double newAngle) {
         angle = newAngle;
     }
