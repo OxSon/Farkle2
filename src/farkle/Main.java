@@ -5,7 +5,6 @@ import java.util.TimerTask;
 
 public class Main {
 
-<<<<<<< HEAD
 	public static void main(String[] args) {
 		StateManager masterController = new StateManager();
 		Timer timer = new Timer();

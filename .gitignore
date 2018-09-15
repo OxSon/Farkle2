@@ -4,3 +4,7 @@
 *.log
 *.class
 FarkleDB/
+build.xml
+build/
+manifest.mf
+nbproject/
