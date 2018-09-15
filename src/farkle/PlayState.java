@@ -214,13 +214,17 @@ public class PlayState extends GameState {
 			if (oc[i] > 0) {
 				//ones and twos of values other than 1 or 5 are invalid except in scenarios
 				//that involve using all 6 dice and will have been handled separately
-				if (oc[i] < 3 && (i != 0 && i != 4)) {
-					return false;
-				}
+                //FIXME debugging
+                if (oc[i] < 3) {
+                    if (i != 0 && i != 4) {
+                        return false;
+                    }
+                }
+//				if (oc[i] < 3 && (i != 0 && i != 4)) {
+//					return false;
+//				}
 			}
-			else return false;
 		}
-
 		return true;
 	}
 
