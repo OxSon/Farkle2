@@ -46,7 +46,7 @@ public class GUI {
 
 		//DRAW PLAYER NAMES AND SCORES
 		//This is how much space each players panel has. This gets smaller if we add more players
-		int playerPanelSize = (Renderer.WindowHeight - PANELBORDERSIZE - SCORINGPANELHEIGHT) / playState.getPlayers().size();
+		double playerPanelSize = (Renderer.WindowHeight - PANELBORDERSIZE - SCORINGPANELHEIGHT) / playState.getPlayers().size();
 		g.setFont(new Font("TimesRoman", Font.BOLD, 20));        //This is the font we will use for most of the info panel text
 
 		for (int i = 0; i < playState.getPlayers().size(); i++) {    //draw each players info
@@ -58,37 +58,29 @@ public class GUI {
 			}
 			drawString(g, "Player " + (i + 1) + ": " + playState.getPlayers().get(i).getName(),
 					Renderer.WindowWidth - RIGHTPANELSIZE + PANELBORDERSIZE,
-					PANELBORDERSIZE + playerPanelSize * i,
+					PANELBORDERSIZE + (int) playerPanelSize * i,
 					RIGHTPANELSIZE - PANELBORDERSIZE * 2,
 					NAMESPACESIZE, c, Color.BLACK);
 
 			g.fillRect( //This draws a border below the name space
 					Renderer.WindowWidth - RIGHTPANELSIZE + PANELBORDERSIZE,
-					PANELBORDERSIZE + playerPanelSize * i + NAMESPACESIZE,
+					PANELBORDERSIZE + (int) (playerPanelSize * i) + NAMESPACESIZE,
 					RIGHTPANELSIZE - PANELBORDERSIZE * 2,
 					SECTIONBORDERSIZE);
 
 			g.drawString("SCORE: " + playState.getPlayers().get(i).getScore(),
 					Renderer.WindowWidth - RIGHTPANELSIZE + PANELBORDERSIZE,
-					playerPanelSize * i + NAMESPACESIZE * 2);
+					(int) (playerPanelSize * i) + NAMESPACESIZE * 2);
 			g.drawString("FARKLES: " + playState.getPlayers().get(i).getFarkles(),
 					Renderer.WindowWidth - RIGHTPANELSIZE + PANELBORDERSIZE,
-					playerPanelSize * i + NAMESPACESIZE * 2 + 20);
+					(int) (playerPanelSize * i) + NAMESPACESIZE * 2 + 20);
 
 			g.fillRect( //This draws a border at the end of the players space
 					Renderer.WindowWidth - RIGHTPANELSIZE + PANELBORDERSIZE,
-					PANELBORDERSIZE + playerPanelSize * i + playerPanelSize - SECTIONBORDERSIZE,
+					PANELBORDERSIZE + (int) (playerPanelSize * i + playerPanelSize) - SECTIONBORDERSIZE + ((i + 1) / playState.getPlayers().size()),
 					RIGHTPANELSIZE - PANELBORDERSIZE * 2,
 					SECTIONBORDERSIZE);
 		}
-
-		g.setColor(Color.MAGENTA);
-		Rectangle Rect = new Rectangle( //This draws a border below the name space
-				Renderer.WindowWidth - RIGHTPANELSIZE + PANELBORDERSIZE,
-				Renderer.WindowHeight - SCORINGPANELHEIGHT,
-				RIGHTPANELSIZE - PANELBORDERSIZE * 2,
-				NAMESPACESIZE);
-		g.fillRect(Rect.getX(), Rect.getY(), Rect.getWidth(), Rect.getHeight());
 
 		//draw the dice that haven't been selected
 		ArrayList<Die> freeDice = playState.getFreeDice();
@@ -111,7 +103,7 @@ public class GUI {
 		for (Die aCapturedDice : capturedDice) {
 			aCapturedDice.draw(g);
 		}
-		
+
 		if (System.currentTimeMillis() - notificationTime < NOTIFICATIONDURATION) {
 			g.setFont(new Font("TimesRoman", Font.BOLD, 100));
 			g.setColor(Color.RED);
@@ -143,14 +135,31 @@ public class GUI {
 	}
 
 	public static void drawScoring(Graphics g) {
+		g.setColor(Color.MAGENTA);
+		Rectangle Rect = new Rectangle( //This draws a border below the name space
+				Renderer.WindowWidth - RIGHTPANELSIZE + PANELBORDERSIZE,
+				Renderer.WindowHeight - SCORINGPANELHEIGHT,
+				RIGHTPANELSIZE - PANELBORDERSIZE * 2,
+				NAMESPACESIZE);
+		g.fillRect(Rect.getX(), Rect.getY(), Rect.getWidth(), Rect.getHeight());
+		
 		Font f = g.getFont();
-		g.setFont(new Font("TimesRoman", 0, 14));
 		Rectangle r = new Rectangle(
-				Renderer.WindowWidth - RIGHTPANELSIZE / 2, Renderer.WindowHeight - BOTTOMPANELSIZE,
+				Renderer.WindowWidth - RIGHTPANELSIZE / 2, Renderer.WindowHeight - SCORINGPANELHEIGHT,
 				RIGHTPANELSIZE, BOTTOMPANELSIZE);
-		drawStringWithCenter("Single 1 = 100        Single 5 = 50", r.getX(), r.getY() + 20, g);
-		drawStringWithCenter("Three 1’s = 300        Three 2’s = 200        Three 3’s = 300", r.getX(), r.getY() + 40, g);
-		drawStringWithCenter("Three 4’s = 400        Three 5’s = 500        Three 6’s = 600", r.getX(), r.getY() + 60, g);
+		g.setFont(new Font("TimesRoman", Font.BOLD, 30));
+		drawStringWithCenter("SCORING GUIDE", r.getX(), r.getY() + 30, g);
+		int Offset = 50;
+		g.setFont(new Font("TimesRoman", Font.BOLD, 14));
+		drawStringWithCenter("Single 1 = 100        Single 5 = 50", r.getX(), r.getY() + (Offset += 20), g);
+		drawStringWithCenter("Three 1’s = 300        Three 2’s = 200        Three 3’s = 300", r.getX(),r.getY() + (Offset += 20), g);
+		drawStringWithCenter("Three 4’s = 400        Three 5’s = 500        Three 6’s = 600", r.getX(), r.getY() + (Offset += 20), g);
+		drawStringWithCenter("Four of any dice = 1,000        Five of any dice = 2,000", r.getX(), r.getY() + (Offset += 20), g);
+		drawStringWithCenter("Six of any dice = 3,000", r.getX(), r.getY() + (Offset += 20), g);
+		drawStringWithCenter("1-6 straight = 1,500", r.getX(), r.getY() + (Offset += 20), g);
+		drawStringWithCenter("Three pairs = 1,500", r.getX(), r.getY() + (Offset += 20), g);
+		drawStringWithCenter("Four of any number with a pair = 1,500", r.getX(), r.getY() + (Offset += 20), g);
+		drawStringWithCenter("Two triplets = 2,500", r.getX(), r.getY() + (Offset += 20), g);
 	}
 
 	public static void drawStringWithCenter(String s, int centerX, int y, Graphics g) {

@@ -24,12 +24,12 @@ public class Main {
 	 * build database
 	 */
 	static {
-		System.out.println("Working as expected");
-		if (!DataBase.doesStrategyTableExist()) {
-			System.out.println("Table Doesn't Exist! Creating Table.");
-			DataBase.dropStrategyTable();
-			DataBase.createStrategyTable();
-			DataBase.fillStrategyTable();
-		}
+//		System.out.println("Working as expected");
+//		if (!DataBase.doesStrategyTableExist()) {
+//			System.out.println("Table Doesn't Exist! Creating Table.");
+//			DataBase.dropStrategyTable();
+//			DataBase.createStrategyTable();
+//			DataBase.fillStrategyTable();
+//		}
 	}
 }
