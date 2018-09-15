@@ -72,7 +72,6 @@ public class SkyNet {
                 state.setCapturedDice(selection);
 
                 if (!rollAgain(state.getRunningTotal(), freeDice.size())) {
-                    done = true;
                     state.endTurn();
                     return;
                 }
