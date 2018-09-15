@@ -46,6 +46,39 @@ public class SkyNet {
         return index;
     }
 
+    public static void takeTurn(PlayState state) {
+        boolean done = false;
+        state.clearSelectedDice();
+        state.clearCapturedDice();
+
+        while (!done) {
+            ArrayList<Die> freeDice = state.getFreeDice();
+
+            if (PlayState.getScore(freeDice) != 0) {
+                ArrayList<ArrayList<Die>> options = getOptions(freeDice);
+                ArrayList<Die> selection = selectDice(options);
+
+                state.setCapturedDice(selection);
+                state.addRunningTotal(state.getCurrentCapturedScore());
+
+                System.out.println("Free dice: " + freeDice.size());
+                if (!rollAgain(state.getRunningTotal(), freeDice.size())) {
+                    done = true;
+                    state.bankPoints(state.getCurrentCapturedScore());
+                    state.nextHand();
+                }
+
+                state.clearAllDice();
+                state.shakeDice();
+            }
+            //FIXME how should this be handled
+            else {
+                GUI.notify("FARKLE");
+                return;
+            }
+        }
+    }
+
     /**
      * finds all legal combinations of scoring dice given a roll
      * @param freeDice the dice that were rolled

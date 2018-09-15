@@ -23,10 +23,10 @@ public class Main {
     /**
      * build database
      */
-    static {
-        System.out.println("Working as expected");
-        DataBase.dropStrategyTable();
-        DataBase.createStrategyTable();
-        DataBase.fillStrategyTable();
-    }
+//    static {
+//        System.out.println("Working as expected");
+//        DataBase.dropStrategyTable();
+//        DataBase.createStrategyTable();
+//        DataBase.fillStrategyTable();
+//    }
 }

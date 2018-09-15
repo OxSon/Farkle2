@@ -32,8 +32,12 @@ public class DataBase {
                 boolean roll = Boolean.valueOf(response.get(1));
                 return new Tuple(weight, roll);
             }
-            else throw new IllegalArgumentException("Score/N Dice pairing is unreachable " +
-                    "under valid Farkle play, please check values");
+            else {
+                //FIXME debugging
+                System.out.println("Score: " + score + " numDice: " + numDice);
+                throw new IllegalArgumentException("Score/N Dice pairing is unreachable " +
+                        "under valid Farkle play, please check values");
+            }
 
         } catch (SQLException | IllegalArgumentException e) {
             e.printStackTrace();
