@@ -83,6 +83,10 @@ public class DataBase {
         }
         return true;
     }
+	
+	public static boolean doesStrategyTableExist(){
+		return queryStrategyTable(50, 5) != null;
+	}
 
     public static boolean createStrategyTable() {
         return createTable("Strategy", "Score INT", "N INT", "Weight INT", "RollAgain BOOLEAN");
