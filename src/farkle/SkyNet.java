@@ -22,12 +22,28 @@ public class SkyNet {
 
         int i = 0;
         for (ArrayList<Die> dice : options) {
-            int score = state.getScore(dice);
-            int numFreeDice = 6 - dice.size();
+            int score = state.getRunningTotal() + state.getScore(dice);
+            int numFreeDice = state.getFreeDice().size() - dice.size();
 
             weights[i] = Objects.requireNonNull(DataBase.queryStrategyTable(score, numFreeDice)).weight;
             i++;
         }
+
+        //FIXME debugging
+        System.out.print("Weights: [");
+        for (int el : weights) {
+            System.out.print(el + " ");
+        }
+        System.out.println("]");
+        int indexChosen = maxValueIndex(weights);
+        System.out.println("Index chosen: " + indexChosen);
+
+        ArrayList<Die> choice = options.get(indexChosen);
+        System.out.print("Chose: ");
+        for (Die die : choice) {
+            System.out.print(die.getValue() + " ");
+        }
+        System.out.println();
 
         return options.get(maxValueIndex(weights));
     }
@@ -85,20 +101,20 @@ public class SkyNet {
 
                 state.captureDice();
 
+                if (state.getFreeDice().isEmpty()) {
+                    state.nextHand();
+                    state.shakeDice();
+                    return;
+                }
+
                 if (!rollAgain(state.getRunningTotal(), freeDice.size())) {
                     state.endTurn();
                     return;
                 }
 
-                state.clearSelectedDice();
-                state.clearCapturedDice();
-                state.shakeDice();
-            }
-            //FIXME how should this be handled
-            else if (freeDice.size() == 0) {
-                state.clearAllDice();
-                state.nextHand();
-                takeTurn(state);
+                else
+                    state.shakeDice();
+
             }
     }
 
