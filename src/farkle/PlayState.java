@@ -208,7 +208,7 @@ public class PlayState extends GameState {
 		}
 	}
 
-	private void endTurn() {
+    public void endTurn() {
 		System.out.println("Player " + players.get(playerTurn).getName() + " earned " + runningTotal + " Points");
         getActivePlayer().finishTurn(runningTotal);        //Give the player the points they earned
 		runningTotal = 0;

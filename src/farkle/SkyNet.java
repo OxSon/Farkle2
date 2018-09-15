@@ -54,20 +54,28 @@ public class SkyNet {
         while (!done) {
             ArrayList<Die> freeDice = state.getFreeDice();
 
-            if (PlayState.getScore(freeDice) != 0) {
+            if (freeDice.size() > 0 && PlayState.getScore(freeDice) != 0) {
                 ArrayList<ArrayList<Die>> options = getOptions(freeDice);
 
                 ArrayList<Die> selection = selectDice(options);
                 state.setSelectedDice(selection);
                 state.addRunningTotal(state.getCurrentSelectionScore());
+                //FIXME debugging
+                System.out.println("Free dice: " + freeDice.size());
+                System.out.println("Skynet selected: ");
+                for (Die die : selection) {
+                    System.out.print(die.getValue() + " ");
+                }
+                System.out.println();
+                System.out.printf("Selection is worth %d points%n", state.getCurrentSelectionScore());
 
                 state.setCapturedDice(selection);
 
-                System.out.println("Free dice: " + freeDice.size());
                 if (!rollAgain(state.getRunningTotal(), freeDice.size())) {
                     done = true;
-                    state.bankPoints(state.getCurrentCapturedScore());
-                    state.nextHand();
+                    state.bankPoints(state.getRunningTotal());
+                    state.endTurn();
+                    return;
                 }
 
                 state.clearSelectedDice();
@@ -75,11 +83,20 @@ public class SkyNet {
                 state.shakeDice();
             }
             //FIXME how should this be handled
+            else if (freeDice.size() == 0) {
+                state.clearAllDice();
+                state.nextHand();
+                GUI.notify("EXTRA HAND");
+            }
             else {
                 GUI.notify("FARKLE");
+                state.shakeDice();
+                state.endTurn();
                 return;
             }
         }
+
+        return;
     }
 
     /**
