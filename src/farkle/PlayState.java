@@ -138,8 +138,17 @@ public class PlayState extends GameState {
 
     public void setCapturedDice(ArrayList<Die> dice) {
         for (Die die : dice) {
-            freeDice.remove(die);
+            selectedDice.remove(die);
             capturedDice.add(die);
+        }
+    }
+
+    public void setSelectedDice(ArrayList<Die> dice) {
+        selectedDice.clear();
+
+        for (Die die : dice) {
+            freeDice.remove(die);
+            selectedDice.add(die);
         }
     }
 

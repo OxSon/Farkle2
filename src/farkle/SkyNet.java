@@ -56,10 +56,12 @@ public class SkyNet {
 
             if (PlayState.getScore(freeDice) != 0) {
                 ArrayList<ArrayList<Die>> options = getOptions(freeDice);
+
                 ArrayList<Die> selection = selectDice(options);
+                state.setSelectedDice(selection);
+                state.addRunningTotal(state.getCurrentSelectionScore());
 
                 state.setCapturedDice(selection);
-                state.addRunningTotal(state.getCurrentCapturedScore());
 
                 System.out.println("Free dice: " + freeDice.size());
                 if (!rollAgain(state.getRunningTotal(), freeDice.size())) {
