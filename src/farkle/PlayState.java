@@ -10,7 +10,7 @@ public class PlayState extends GameState {
 	public static final int NUMOFDICE = 6;
 
 	private final ArrayList<Die> freeDice;
-	private final ArrayList<Die> selectedDice;
+	private ArrayList<Die> selectedDice;
 	private final ArrayList<Die> capturedDice;
 
 	private final ArrayList<Player> players;
@@ -73,9 +73,9 @@ public class PlayState extends GameState {
 				}
 			} else if (e.getButton() == MouseEvent.BUTTON2) {		//TODO MAKE THIS NOT RIGHT MOUSE FOR NEXT ROLL
 				if (players.get(playerTurn).getScore() == 0) {
-					if (runningTotal + getScore(selectedDice) < 500) {
-						return;
-					}
+//					if (runningTotal + getScore(selectedDice) < 500) {
+//						return;
+//					}
 				}
 				runningTotal += getScore(selectedDice);
 				endTurn();
@@ -84,7 +84,7 @@ public class PlayState extends GameState {
 					turnStart = false;
 					shakeDice();
 				}
-				if (getScore(selectedDice) != 0 && verifyHand(selectedDice)) {
+				if (getScore(selectedDice) != 0) {
 					runningTotal += getScore(selectedDice);
 					capturedDice.addAll(selectedDice);
 					selectedDice.clear();
@@ -141,6 +141,11 @@ public class PlayState extends GameState {
             selectedDice.remove(die);
             capturedDice.add(die);
         }
+    }
+
+    public void captureDice() {
+        capturedDice.addAll(selectedDice);
+        selectedDice = new ArrayList<>();
     }
 
     public void setSelectedDice(ArrayList<Die> dice) {
@@ -202,33 +207,28 @@ public class PlayState extends GameState {
 	}
 
 	//FIXME test
-	public static boolean verifyHand(ArrayList<Die> Dice) {
-		//build record of how many of each die-value we have
-		int[] oc = new int[Die.MAXVALUE];
-		for (Die aDice : Dice) {
-			oc[aDice.getValue() - 1]++;
-		}
-		//test failure conditions
-		for (int i = 0; i < Die.MAXVALUE; i++) {
-			//we don't need to pay attention to non-existent die-values
-			if (oc[i] > 0) {
-				//ones and twos of values other than 1 or 5 are invalid except in scenarios
-				//that involve using all 6 dice and will have been handled separately
+	public boolean verifyHand(ArrayList<Die> dice) {
+//build record of how many of each die-value we have
+        int[] oc = new int[Die.MAXVALUE];
+        for (Die aDice : dice) {
+            oc[aDice.getValue() - 1]++;
+        }
+        //test failure conditions
+        for (int i = 0; i < Die.MAXVALUE; i++) {
+            //we don't need to pay attention to non-existent die-values
+            if (oc[i] > 0) {
+                //ones and twos of values other than 1 or 5 are invalid except in scenarios
+                //that involve using all 6 dice and will have been handled separately
                 //FIXME debugging
-                if (oc[i] < 3) {
-                    if (i != 0 && i != 4) {
-                        return false;
-                    }
-                }
-//				if (oc[i] < 3 && (i != 0 && i != 4)) {
-//					return false;
-//				}
-			}
-		}
-		return true;
+				if (oc[i] < 3 && (i != 0 && i != 4)) {
+					return false;
+				}
+            }
+        }
+        return true;
 	}
 
-	public static int getScore(ArrayList<Die> dice) {
+	public int getScore(ArrayList<Die> dice) {
 		int score = 0;
 		int[] oc = new int[Die.MAXVALUE];	//Occurance Count
 
@@ -292,7 +292,12 @@ public class PlayState extends GameState {
 			return 2500;        //Special case, this will use the whole roll, leaving no other points available
 		}
 
-		return score;
+		//FIXME
+		if (verifyHand(getSelectedDice())) {
+		    return score;
+        }
+        else
+            return 0;
 	}
 
 	public ArrayList<Player> getPlayers() {
