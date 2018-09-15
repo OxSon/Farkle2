@@ -60,13 +60,20 @@ public class SkyNet {
                 ArrayList<Die> selection = selectDice(options);
                 state.setSelectedDice(selection);
                 state.addRunningTotal(state.getCurrentSelectionScore());
+                //FIXME debugging
+                System.out.println("Free dice: " + freeDice.size());
+                System.out.println("Skynet selected: ");
+                for (Die die : selection) {
+                    System.out.print(die.getValue() + " ");
+                }
+                System.out.println();
+                System.out.printf("Selection is worth %d points%n", state.getCurrentSelectionScore());
 
                 state.setCapturedDice(selection);
 
-                System.out.println("Free dice: " + freeDice.size());
                 if (!rollAgain(state.getRunningTotal(), freeDice.size())) {
                     done = true;
-                    state.bankPoints(state.getCurrentCapturedScore());
+                    state.bankPoints(state.getRunningTotal());
                     state.endTurn();
                     return;
                 }
