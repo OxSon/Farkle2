@@ -73,7 +73,6 @@ public class SkyNet {
 
                 if (!rollAgain(state.getRunningTotal(), freeDice.size())) {
                     done = true;
-                    state.bankPoints(state.getRunningTotal());
                     state.endTurn();
                     return;
                 }

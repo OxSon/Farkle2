@@ -184,11 +184,6 @@ public class PlayState extends GameState {
         runningTotal += score;
     }
 
-    public void bankPoints(int score) {
-        getActivePlayer().finishTurn(score);
-    }
-
-
     public void shakeDice() {
 		rolling = true;
 		for (Die aFreeDice : freeDice) {
