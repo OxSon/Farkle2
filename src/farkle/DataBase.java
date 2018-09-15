@@ -6,6 +6,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * FIXME
+ * <p>
+ * generify and create a class that inherits from this to be the strategy table specifically?
+ */
 public class DataBase {
 
     public static Tuple queryStrategyTable(int score, int numDice) {

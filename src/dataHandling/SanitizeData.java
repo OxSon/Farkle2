@@ -1,4 +1,4 @@
-package farkle;
+package dataHandling;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -8,10 +8,10 @@ import java.util.Scanner;
 public class SanitizeData {
     public static void main(String[] args) {
         try {
-            File dirtyData = new File("src/farkle/farkle_strategy.csv");
+            File dirtyData = new File("data/farkle/farkle_strategy.csv");
             Scanner input = new Scanner(dirtyData);
 
-            File cleanData = new File("src/farkle/cleanData.sql");
+            File cleanData = new File("data/farkle/cleanData.sql");
             FileWriter write = new FileWriter(cleanData, true);
 
             while (input.hasNextLine()) {
