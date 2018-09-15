@@ -17,12 +17,12 @@ public class SkyNet {
      * @param options dice-combinations to consider
      * @return the dice chosen
      */
-    public static ArrayList<Die> selectDice(ArrayList<ArrayList<Die>> options) {
+    public static ArrayList<Die> selectDice(ArrayList<ArrayList<Die>> options, PlayState state) {
         int[] weights = new int[options.size()];
 
         int i = 0;
         for (ArrayList<Die> dice : options) {
-            int score = PlayState.getScore(dice);
+            int score = state.getScore(dice);
             int numFreeDice = 6 - dice.size();
 
             weights[i] = Objects.requireNonNull(DataBase.queryStrategyTable(score, numFreeDice)).weight;
@@ -51,13 +51,27 @@ public class SkyNet {
         state.clearSelectedDice();
         state.clearCapturedDice();
 
-        while (!done) {
             ArrayList<Die> freeDice = state.getFreeDice();
 
-            if (freeDice.size() > 0 && PlayState.getScore(freeDice) != 0) {
-                ArrayList<ArrayList<Die>> options = getOptions(freeDice);
+            if (freeDice.size() > 0 && state.getScore(freeDice) != 0) {
+                ArrayList<ArrayList<Die>> options = getOptions(state);
 
-                ArrayList<Die> selection = selectDice(options);
+                System.out.println("Dice: ");
+                for (Die die : freeDice) {
+                    System.out.println(die.getValue() + " ");
+                }
+                System.out.println();
+
+                int i = 0;
+                for (ArrayList<Die> set : options) {
+                    System.out.printf("Option %d:%n", i++);
+                    for (Die die : set) {
+                        System.out.print(die.getValue() + " ");
+                    }
+                    System.out.println();
+                }
+
+                ArrayList<Die> selection = selectDice(options, state);
                 state.setSelectedDice(selection);
                 state.addRunningTotal(state.getCurrentSelectionScore());
                 //FIXME debugging
@@ -69,10 +83,9 @@ public class SkyNet {
                 System.out.println();
                 System.out.printf("Selection is worth %d points%n", state.getCurrentSelectionScore());
 
-                state.setCapturedDice(selection);
+                state.captureDice();
 
                 if (!rollAgain(state.getRunningTotal(), freeDice.size())) {
-                    done = true;
                     state.endTurn();
                     return;
                 }
@@ -85,36 +98,30 @@ public class SkyNet {
             else if (freeDice.size() == 0) {
                 state.clearAllDice();
                 state.nextHand();
-                GUI.notify("EXTRA HAND");
+                takeTurn(state);
             }
-            else {
-                GUI.notify("FARKLE");
-                state.shakeDice();
-                state.endTurn();
-                return;
-            }
-        }
-
-        return;
     }
 
     /**
      * finds all legal combinations of scoring dice given a roll
-     * @param freeDice the dice that were rolled
-     * @return an arraylist of arraylists of dice
      */
-    public static ArrayList<ArrayList<Die>> getOptions(ArrayList<Die> freeDice) {
+    public static ArrayList<ArrayList<Die>> getOptions(PlayState state) {
+        ArrayList<Die> freeDice = state.getFreeDice();
         ArrayList<ArrayList<Die>> options = new ArrayList<>();
-        for (int i = 1; i < 64; i++) {
+
+        for (int i = 1; i < Math.pow(2, freeDice.size()); i++) {
             ArrayList<Die> set = new ArrayList<>();
-            //FIXME needs to include leading zeros
+
             String binary = String.format("%6s", Integer.toBinaryString(i)).replace(' ', '0');
+            //FIXME debugging
+            System.out.println(binary);
+            binary = new StringBuilder(binary).reverse().toString();
             for (int j = 0; j < freeDice.size(); j++) {
                 if (binary.charAt(j) == '1') {
                     set.add(freeDice.get(j));
                 }
             }
-            if (PlayState.verifyHand(set)) {
+            if (state.getScore(set) != 0 && state.verifyHand(set)) {
                 options.add(set);
             }
         }
@@ -131,28 +138,5 @@ public class SkyNet {
     public static boolean rollAgain(int score, int numFreeDice) {
         Tuple response = DataBase.queryStrategyTable(score, numFreeDice);
         return Objects.requireNonNull(response).roll;
-    }
-
-    /**
-     * testing
-     *
-     * @param args
-     */
-    public static void main(String[] args) {
-        ArrayList<Die> freeDice = new ArrayList<>();
-        freeDice.add(new Die(3));
-        freeDice.add(new Die(6));
-        freeDice.add(new Die(6));
-        freeDice.add(new Die(6));
-        freeDice.add(new Die(5));
-        freeDice.add(new Die(1));
-
-        ArrayList<ArrayList<Die>> options = getOptions(freeDice);
-        for (ArrayList<Die> combo : options) {
-            for (Die die : combo) {
-                System.out.println(die.getValue());
-            }
-            System.out.println();
-        }
     }
 }

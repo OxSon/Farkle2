@@ -5,6 +5,7 @@ import java.util.TimerTask;
 
 public class Main {
 
+<<<<<<< HEAD
 	public static void main(String[] args) {
 		StateManager masterController = new StateManager();
 		Timer timer = new Timer();
@@ -20,16 +21,13 @@ public class Main {
 		}, 0, 16);
 	}
 
-	/**
-	 * build database
-	 */
-	static {
-//		System.out.println("Working as expected");
-//		if (!DataBase.doesStrategyTableExist()) {
-//			System.out.println("Table Doesn't Exist! Creating Table.");
-//			DataBase.dropStrategyTable();
-//			DataBase.createStrategyTable();
-//			DataBase.fillStrategyTable();
-//		}
-	}
+    /**
+     * build database
+     */
+    static {
+        System.out.println("Working as expected");
+        DataBase.dropStrategyTable();
+        DataBase.createStrategyTable();
+        DataBase.fillStrategyTable();
+    }
 }

@@ -10,7 +10,7 @@ public class PlayState extends GameState {
 	public static final int NUMOFDICE = 6;
 
 	private final ArrayList<Die> freeDice;
-	private final ArrayList<Die> selectedDice;
+	private ArrayList<Die> selectedDice;
 	private final ArrayList<Die> capturedDice;
 
 	private final ArrayList<Player> players;
@@ -142,56 +142,61 @@ public class PlayState extends GameState {
 			}
 
 			//TODO THIS IS WHERE WE INTERFACE WITH AN AI CLASS
-            SkyNet.takeTurn(this);
+			SkyNet.takeTurn(this);
 		}
 	}
 
-    public void setCapturedDice(ArrayList<Die> dice) {
-        for (Die die : dice) {
-            selectedDice.remove(die);
-            capturedDice.add(die);
-        }
-    }
+	public void setCapturedDice(ArrayList<Die> dice) {
+		for (Die die : dice) {
+			selectedDice.remove(die);
+			capturedDice.add(die);
+		}
+	}
 
-    public void setSelectedDice(ArrayList<Die> dice) {
-        selectedDice.clear();
+	public void captureDice() {
+		capturedDice.addAll(selectedDice);
+		selectedDice = new ArrayList<>();
+	}
 
-        for (Die die : dice) {
-            freeDice.remove(die);
-            selectedDice.add(die);
-        }
-    }
+	public void setSelectedDice(ArrayList<Die> dice) {
+		selectedDice.clear();
 
-    public void clearAllDice() {
-        clearCapturedDice();
-        clearSelectedDice();
-        clearFreeDice();
-    }
+		for (Die die : dice) {
+			freeDice.remove(die);
+			selectedDice.add(die);
+		}
+	}
 
-    public void clearCapturedDice() {
-        capturedDice.clear();
-    }
+	public void clearAllDice() {
+		clearCapturedDice();
+		clearSelectedDice();
+		clearFreeDice();
+	}
 
-    public void clearSelectedDice() {
-        selectedDice.clear();
-    }
+	public void clearCapturedDice() {
+		capturedDice.clear();
+	}
 
-    public void clearFreeDice() {
-        freeDice.clear();
-    }
+	public void clearSelectedDice() {
+		selectedDice.clear();
+	}
 
-    public void addRunningTotal(int score) {
-        runningTotal += score;
-    }
+	public void clearFreeDice() {
+		freeDice.clear();
+	}
 
-    public void shakeDice() {
+	public void addRunningTotal(int score) {
+		runningTotal += score;
+	}
+
+	public void shakeDice() {
 		rolling = true;
 		for (Die aFreeDice : freeDice) {
 			aFreeDice.shake(100);
 		}
 	}
 
-    public void nextHand() {
+	public void nextHand() {
 		turnStart = true;
 		freeDice.clear();
 		selectedDice.clear();
@@ -203,19 +208,19 @@ public class PlayState extends GameState {
 		}
 	}
 
-    public void endTurn() {
+	public void endTurn() {
 		System.out.println("Player " + players.get(playerTurn).getName() + " earned " + runningTotal + " Points");
-        getActivePlayer().finishTurn(runningTotal);        //Give the player the points they earned
+		getActivePlayer().finishTurn(runningTotal);        //Give the player the points they earned
 		runningTotal = 0;
 		nextHand();
 		playerTurn = (playerTurn + 1) % players.size();
 	}
 
 	//FIXME test
-	public static boolean verifyHand(ArrayList<Die> Dice) {
-		//build record of how many of each die-value we have
+	public boolean verifyHand(ArrayList<Die> dice) {
+//build record of how many of each die-value we have
 		int[] oc = new int[Die.MAXVALUE];
-		for (Die aDice : Dice) {
+		for (Die aDice : dice) {
 			oc[aDice.getValue() - 1]++;
 		}
 		//test failure conditions
@@ -224,16 +229,16 @@ public class PlayState extends GameState {
 			if (oc[i] > 0) {
 				//ones and twos of values other than 1 or 5 are invalid except in scenarios
 				//that involve using all 6 dice and will have been handled separately
+				//FIXME debugging
 				if (oc[i] < 3 && (i != 0 && i != 4)) {
 					return false;
 				}
 			}
 		}
-
 		return true;
 	}
 
-	public static int getScore(ArrayList<Die> dice) {
+	public int getScore(ArrayList<Die> dice) {
 		int score = 0;
 		int[] oc = new int[Die.MAXVALUE];	//Occurance Count
 
@@ -297,7 +302,12 @@ public class PlayState extends GameState {
 			return 2500;        //Special case, this will use the whole roll, leaving no other points available
 		}
 
-		return score;
+		//FIXME
+		if (verifyHand(getSelectedDice())) {
+			return score;
+		} else {
+			return 0;
+		}
 	}
 
 	public ArrayList<Player> getPlayers() {
@@ -316,9 +326,9 @@ public class PlayState extends GameState {
 		return getScore(selectedDice);
 	}
 
-    public int getCurrentCapturedScore() {
-        return getScore(capturedDice);
-    }
+	public int getCurrentCapturedScore() {
+		return getScore(capturedDice);
+	}
 
 	public ArrayList<Die> getFreeDice() {
 		return freeDice;
@@ -332,7 +342,7 @@ public class PlayState extends GameState {
 		return capturedDice;
 	}
 
-    public Player getActivePlayer() {
-        return players.get(playerTurn);
-    }
+	public Player getActivePlayer() {
+		return players.get(playerTurn);
+	}
 }
