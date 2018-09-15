@@ -86,16 +86,16 @@ public class DataBase {
         return true;
     }
 
-    private static boolean createStrategyTable() {
+    public static boolean createStrategyTable() {
         return createTable("Strategy", "Score INT", "N INT", "Weight INT", "RollAgain BOOLEAN");
     }
 
-    private static boolean fillStrategyTable() {
+    public static boolean fillStrategyTable() {
         StringBuilder sb = new StringBuilder();
         String fillTable;
 
         try {
-            File sql = new File("src/farkle/cleanData.sql");
+            File sql = new File("data/farkle/cleanData.sql");
             Scanner input = new Scanner(sql);
             while (input.hasNextLine()) {
                 sb.append(input.nextLine());
@@ -125,7 +125,7 @@ public class DataBase {
         return true;
     }
 
-    private static boolean dropStrategyTable() {
+    public static boolean dropStrategyTable() {
         return dropTable("Strategy");
     }
 
