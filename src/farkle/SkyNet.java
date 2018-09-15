@@ -54,7 +54,7 @@ public class SkyNet {
         while (!done) {
             ArrayList<Die> freeDice = state.getFreeDice();
 
-            if (PlayState.getScore(freeDice) != 0) {
+            if (freeDice.size() > 0 && PlayState.getScore(freeDice) != 0) {
                 ArrayList<ArrayList<Die>> options = getOptions(freeDice);
 
                 ArrayList<Die> selection = selectDice(options);
@@ -68,6 +68,7 @@ public class SkyNet {
                     done = true;
                     state.bankPoints(state.getCurrentCapturedScore());
                     state.nextHand();
+                    return;
                 }
 
                 state.clearSelectedDice();
@@ -75,11 +76,17 @@ public class SkyNet {
                 state.shakeDice();
             }
             //FIXME how should this be handled
+            else if (freeDice.size() == 0) {
+                state.clearAllDice();
+                GUI.notify("EXTRA HAND");
+            }
             else {
                 GUI.notify("FARKLE");
                 return;
             }
         }
+
+        return;
     }
 
     /**
