@@ -23,14 +23,14 @@ public class MainMenuState extends GameState {
                         Renderer.percentToPixelsHeight(40),
                         Renderer.percentToPixelsWidth(30),
                         Renderer.percentToPixelsHeight(10)),
-                "play", Color.BLACK, Color.GRAY, Color.GREEN, 3, 30);
+                "PLAY", Color.BLACK, Color.GRAY, Color.GREEN, 3, 30);
         exit = new Button(
                 new Rectangle(
                         Renderer.percentToPixelsWidth(35),
                         Renderer.percentToPixelsHeight(60),
                         Renderer.percentToPixelsWidth(30),
                         Renderer.percentToPixelsHeight(10)),
-                "exit", Color.BLACK, Color.GRAY, Color.GREEN, 3, 30);
+                "EXIT", Color.BLACK, Color.GRAY, Color.GREEN, 3, 30);
         dice = new ArrayList<>();
         for (int i = 0; i < PlayState.NUMOFDICE * 2; i++) {
             dice.add(new Die(
