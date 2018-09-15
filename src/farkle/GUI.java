@@ -71,6 +71,9 @@ public class GUI {
 			g.drawString("SCORE: " + playState.getPlayers().get(i).getScore(),
 					Renderer.WindowWidth - RIGHTPANELSIZE + PANELBORDERSIZE,
 					playerPanelSize * i + NAMESPACESIZE * 2);
+			g.drawString("FARKLES: " + playState.getPlayers().get(i).getFarkles(),
+					Renderer.WindowWidth - RIGHTPANELSIZE + PANELBORDERSIZE,
+					playerPanelSize * i + NAMESPACESIZE * 2 + 20);
 
 			g.fillRect( //This draws a border at the end of the players space
 					Renderer.WindowWidth - RIGHTPANELSIZE + PANELBORDERSIZE,
@@ -88,12 +91,12 @@ public class GUI {
 		g.fillRect(Rect.getX(), Rect.getY(), Rect.getWidth(), Rect.getHeight());
 
 		//draw the dice that haven't been selected
-		ArrayList<Die> freeDice = (ArrayList<Die>)playState.getFreeDice().clone();
+		ArrayList<Die> freeDice = playState.getFreeDice();
 		for (Die aFreeDice : freeDice) {
 			aFreeDice.draw(g);
 		}
 		//draw a circle around the dice that have been selected
-		ArrayList<Die> selectedDice = (ArrayList<Die>)playState.getSelectedDice().clone();
+		ArrayList<Die> selectedDice = playState.getSelectedDice();
 		for (Die aSelectedDice : selectedDice) {
 			g.setColor(Color.RED);
 			g.fillOval(
@@ -104,7 +107,7 @@ public class GUI {
 			aSelectedDice.draw(g);    //draw the dice on top of the selection circle
 		}
 		//Draw all the dice that have been selected and then moved off the table
-		ArrayList<Die> capturedDice = (ArrayList<Die>)playState.getCapturedDice().clone();
+		ArrayList<Die> capturedDice = playState.getCapturedDice();
 		for (Die aCapturedDice : capturedDice) {
 			aCapturedDice.draw(g);
 		}
@@ -121,7 +124,6 @@ public class GUI {
 		g.setColor(Color.BLACK);
 		g.drawString("Running Total: " + playState.getRunningTotal(), 30, 50);
 		g.drawString("Current Selection: " + playState.getCurrentSelectionScore(), 30, 100);
-
 		drawScoring(g);
 	}
 

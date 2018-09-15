@@ -38,14 +38,63 @@ public class PlayState extends GameState {
 
 	@Override
 	public void draw(Graphics g) {
-		//draw the frame of the GUI
 		GUI.draw(g, this);
-
 	}
 
 	private void handleKeys() {
 		if (Input.isKeyPressed(KeyEvent.VK_ESCAPE)) {
 			controller.pop();
+		}
+	}
+
+	private void selectDicePressed(MouseEvent e) {
+		//FIXME code duplication, extract method?
+		for (int i = 0; i < freeDice.size(); i++) {
+			if (Math.hypot(freeDice.get(i).getPosition().getX() - e.getX(), freeDice.get(i).getPosition().getY() - e.getY()) < Die.HYPOT / 2) {
+				selectedDice.add(freeDice.get(i));
+				freeDice.remove(i);
+				return;
+			}
+		}
+		for (int i = 0; i < selectedDice.size(); i++) {
+			if (Math.hypot(selectedDice.get(i).getPosition().getX() - e.getX(), selectedDice.get(i).getPosition().getY() - e.getY()) < Die.HYPOT / 2) {
+				freeDice.add(selectedDice.get(i));
+				selectedDice.remove(i);
+				return;
+			}
+		}
+	}
+
+	private void endTurnPressed() {
+		if (players.get(playerTurn).getScore() == 0) {
+			if (runningTotal + getScore(selectedDice) < 500) {
+				return;
+			}
+		}
+		runningTotal += getScore(selectedDice);
+		endTurn();
+	}
+
+	private void nextRollPressed() {
+		if (turnStart) {        //If this is the first roll of a hand
+			turnStart = false;
+			shakeDice();
+		}
+		if (getScore(selectedDice) != 0 && verifyHand(selectedDice)) {
+			runningTotal += getScore(selectedDice);
+			capturedDice.addAll(selectedDice);
+			selectedDice.clear();
+
+			for (int i = 0; i < capturedDice.size(); i++) {
+				capturedDice.get(i).setAngle(0);
+				capturedDice.get(i).setPosition(new Vector2(100 + i * 150, Renderer.WindowHeight - GUI.BOTTOMPANELSIZE + 100));
+			}
+			if (freeDice.isEmpty()) {
+				nextHand();
+				GUI.notify("Extra Hand!");
+			} else {
+				shakeDice();
+			}
 		}
 	}
 
@@ -56,50 +105,11 @@ public class PlayState extends GameState {
 		}
 		if (!rolling) {
 			if (e.getButton() == MouseEvent.BUTTON1 && !turnStart) {
-				//FIXME code duplication, extract method?
-				for (int i = 0; i < freeDice.size(); i++) {
-					if (Math.hypot(freeDice.get(i).getPosition().getX() - e.getX(), freeDice.get(i).getPosition().getY() - e.getY()) < Die.HYPOT / 2) {
-						selectedDice.add(freeDice.get(i));
-						freeDice.remove(i);
-						return;
-					}
-				}
-				for (int i = 0; i < selectedDice.size(); i++) {
-					if (Math.hypot(selectedDice.get(i).getPosition().getX() - e.getX(), selectedDice.get(i).getPosition().getY() - e.getY()) < Die.HYPOT / 2) {
-						freeDice.add(selectedDice.get(i));
-						selectedDice.remove(i);
-						return;
-					}
-				}
+				selectDicePressed(e);
 			} else if (e.getButton() == MouseEvent.BUTTON2) {		//TODO MAKE THIS NOT RIGHT MOUSE FOR NEXT ROLL
-				if (players.get(playerTurn).getScore() == 0) {
-					if (runningTotal + getScore(selectedDice) < 500) {
-						return;
-					}
-				}
-				runningTotal += getScore(selectedDice);
-				endTurn();
+				endTurnPressed();
 			} else if (e.getButton() == MouseEvent.BUTTON3) {
-				if (turnStart) {        //If this is the first roll of a hand
-					turnStart = false;
-					shakeDice();
-				}
-				if (getScore(selectedDice) != 0 && verifyHand(selectedDice)) {
-					runningTotal += getScore(selectedDice);
-					capturedDice.addAll(selectedDice);
-					selectedDice.clear();
-
-					for (int i = 0; i < capturedDice.size(); i++) {
-						capturedDice.get(i).setAngle(0);
-						capturedDice.get(i).setPosition(new Vector2(100 + i * 150, Renderer.WindowHeight - GUI.BOTTOMPANELSIZE + 100));
-					}
-					if (freeDice.isEmpty()) {
-						nextHand();
-						GUI.notify("Extra Hand!");
-					} else {
-						shakeDice();
-					}
-				}
+				nextRollPressed();
 			}
 		}
 	}
@@ -222,19 +232,19 @@ public class PlayState extends GameState {
 			oc[aDice.getValue() - 1]++;
 		}
 
-		for (int anOc4 : oc) {
-			if (anOc4 == 4) {
+		for (int i = 0; i < oc.length; i++) {
+			if (oc[i] == 4) {
 				score += 1000;
-				anOc4 -= 4;
+				oc[i] -= 4;
 				for (int anOc2 : oc) {	//Check for a pair to determine if its a full house
 					if (anOc2 == 2) {
 						return 1500;	//FULL HOSUSE
 					}
 				}
-			} else if (anOc4 == 5) {
+			} else if (oc[i] == 5) {
 				score += 2000;
-				anOc4 -= 5;
-			} else if (anOc4 == 6) {
+				oc[i] -= 5;
+			} else if (oc[i] == 6) {
 				return 3000;	//Max points
 			}
 		}
@@ -300,9 +310,11 @@ public class PlayState extends GameState {
 	public ArrayList<Die> getFreeDice() {
 		return freeDice;
 	}
+
 	public ArrayList<Die> getSelectedDice() {
 		return selectedDice;
 	}
+
 	public ArrayList<Die> getCapturedDice() {
 		return capturedDice;
 	}
