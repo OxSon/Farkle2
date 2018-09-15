@@ -156,19 +156,18 @@ public class PlayState extends GameState {
             System.out.println(capturedDice.size() + " " + selectedDice + " " + freeDice);
             while (!solved) {
                 System.out.println(capturedDice.size() + " " + selectedDice + " " + freeDice);
-                int num = (int) (Math.random() * freeDice.size()) + 1;
-                for (int i = 0; i < num; i++) {
-                    selectedDice.add(freeDice.remove((int) (Math.random() * freeDice.size())));
-                }
-                if (!verifyHand(selectedDice)) {
 
-                    freeDice.addAll(selectedDice);
-                    selectedDice.clear();
+                ArrayList<ArrayList<Die>> options = SkyNet.getOptions(freeDice);
+                ArrayList<Die> selection = SkyNet.selectDice(options);
+
+                for (Die die : selection) {
+                    selectedDice.add(die);
                 }
-                if (getScore(selectedDice) == 0) {
-                    freeDice.addAll(selectedDice);
-                    selectedDice.clear();
+
+                if (!SkyNet.rollAgain(runningTotal, freeDice.size())) {
+                    endTurn();
                 }
+
                 else {
                     System.out.println(capturedDice.size() + " " + selectedDice + " " + freeDice);
                     runningTotal += getScore(selectedDice);

@@ -50,7 +50,7 @@ public class SkyNet {
      * @param freeDice
      * @return
      */
-    private static ArrayList<ArrayList<Die>> getOptions(int score, ArrayList<Die> freeDice) {
+    public static ArrayList<ArrayList<Die>> getOptions(ArrayList<Die> freeDice) {
         ArrayList<ArrayList<Die>> options = new ArrayList<>();
         for (int i = 1; i < 64; i++) {
             ArrayList<Die> set = new ArrayList<>();
