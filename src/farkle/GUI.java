@@ -2,6 +2,7 @@ package farkle;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 
 public class GUI {
 
@@ -81,27 +82,30 @@ public class GUI {
 					RIGHTPANELSIZE - PANELBORDERSIZE * 2,
 					SECTIONBORDERSIZE);
 		}
-
-		//draw the dice that haven't been selected
-		ArrayList<Die> freeDice = playState.getFreeDice();
-		for (Die aFreeDice : freeDice) {
-			aFreeDice.draw(g);
-		}
-		//draw a circle around the dice that have been selected
-		ArrayList<Die> selectedDice = playState.getSelectedDice();
-		for (Die aSelectedDice : selectedDice) {
-			g.setColor(Color.RED);
-			g.fillOval(
-					(int) aSelectedDice.getPosition().getX() - (int) Die.HYPOT / 2,
-					(int) aSelectedDice.getPosition().getY() - (int) Die.HYPOT / 2,
-					(int) Die.HYPOT,
-					(int) Die.HYPOT);
-			aSelectedDice.draw(g);    //draw the dice on top of the selection circle
-		}
-		//Draw all the dice that have been selected and then moved off the table
-		ArrayList<Die> capturedDice = playState.getCapturedDice();
-		for (Die aCapturedDice : capturedDice) {
-			aCapturedDice.draw(g);
+		try {
+			//draw the dice that haven't been selected
+			ArrayList<Die> freeDice = playState.getFreeDice();
+			for (Die aFreeDice : freeDice) {
+				aFreeDice.draw(g);
+			}
+			//draw a circle around the dice that have been selected
+			ArrayList<Die> selectedDice = playState.getSelectedDice();
+			for (Die aSelectedDice : selectedDice) {
+				g.setColor(Color.RED);
+				g.fillOval(
+						(int) aSelectedDice.getPosition().getX() - (int) Die.HYPOT / 2,
+						(int) aSelectedDice.getPosition().getY() - (int) Die.HYPOT / 2,
+						(int) Die.HYPOT,
+						(int) Die.HYPOT);
+				aSelectedDice.draw(g);    //draw the dice on top of the selection circle
+			}
+			//Draw all the dice that have been selected and then moved off the table
+			ArrayList<Die> capturedDice = playState.getCapturedDice();
+			for (Die aCapturedDice : capturedDice) {
+				aCapturedDice.draw(g);
+			}
+		} catch (ConcurrentModificationException e){
+			return;
 		}
 
 		if (System.currentTimeMillis() - notificationTime < NOTIFICATIONDURATION) {
@@ -142,7 +146,7 @@ public class GUI {
 				RIGHTPANELSIZE - PANELBORDERSIZE * 2,
 				NAMESPACESIZE);
 		g.fillRect(Rect.getX(), Rect.getY(), Rect.getWidth(), Rect.getHeight());
-		
+
 		Font f = g.getFont();
 		Rectangle r = new Rectangle(
 				Renderer.WindowWidth - RIGHTPANELSIZE / 2, Renderer.WindowHeight - SCORINGPANELHEIGHT,
@@ -153,7 +157,7 @@ public class GUI {
 		int Offset = 50;
 		g.setFont(new Font("TimesRoman", Font.BOLD, 14));
 		drawStringWithCenter("Single 1 = 100        Single 5 = 50", r.getX(), r.getY() + (Offset += 20), g);
-		drawStringWithCenter("Three 1’s = 300        Three 2’s = 200        Three 3’s = 300", r.getX(),r.getY() + (Offset += 20), g);
+		drawStringWithCenter("Three 1’s = 300        Three 2’s = 200        Three 3’s = 300", r.getX(), r.getY() + (Offset += 20), g);
 		drawStringWithCenter("Three 4’s = 400        Three 5’s = 500        Three 6’s = 600", r.getX(), r.getY() + (Offset += 20), g);
 		drawStringWithCenter("Four of any dice = 1,000        Five of any dice = 2,000", r.getX(), r.getY() + (Offset += 20), g);
 		drawStringWithCenter("Six of any dice = 3,000", r.getX(), r.getY() + (Offset += 20), g);
