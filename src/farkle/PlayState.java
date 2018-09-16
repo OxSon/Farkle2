@@ -182,7 +182,6 @@ public class PlayState extends GameState {
 
 	public void setSelectedDice(ArrayList<Die> dice) {
 		selectedDice.clear();
-
 		for (Die die : dice) {
 			freeDice.remove(die);
 			selectedDice.add(die);
