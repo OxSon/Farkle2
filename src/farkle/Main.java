@@ -3,6 +3,11 @@ package farkle;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * Application entry-point
+ * <p>
+ * @author Alec Mills and Josh DeMoss
+ */
 public class Main {
 
     public static void main(String[] args) {

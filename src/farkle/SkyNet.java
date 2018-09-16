@@ -4,11 +4,75 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 /**
- * @author alec mills
+ * @author Alec Mills and Josh DeMoss
  * <p>
  * handles AI-controlled player decisions for Farkle
  */
 public class SkyNet {
+
+    /**
+     * handles AI's turn, dice choices, roll choices, etc
+     *
+     * @param state the game-state at time of turn-start
+     */
+    public static void takeTurn(PlayState state) {
+        ArrayList<Die> freeDice = state.getFreeDice();
+
+        //possible combinations of dice the AI could select
+        ArrayList<ArrayList<Die>> options = getOptions(state);
+        //combination AI selected
+        ArrayList<Die> selection = selectDice(options, state);
+
+        //update GUI
+        state.setSelectedDice(selection);
+        state.addRunningTotal(state.getCurrentSelectionScore());
+        state.captureDice();
+
+        //if AI used all the dice, give it another hand
+        if (state.getFreeDice().isEmpty()) {
+            state.nextHand();
+        }
+
+        //AI uses a different look-up table depending on whether it has a minimum value necessary to bank
+        boolean onScoreBoard = state.getActivePlayer().getScore() > 0;
+        if (!rollAgain(state.getRunningTotal(), freeDice.size(), onScoreBoard))
+            state.endTurn();
+        else
+            state.shakeDice();
+    }
+
+    /**
+     * finds all legal combinations of scoring dice given a roll
+     *
+     * @param state game-state at time of turn start
+     * @return a list of legal combinations of dice the AI could choose
+     */
+    private static ArrayList<ArrayList<Die>> getOptions(PlayState state) {
+        ArrayList<Die> freeDice = state.getFreeDice();
+        ArrayList<ArrayList<Die>> options = new ArrayList<>();
+
+        //given a set of N objects, there are 2^N combinations; here we ignore the empty set option
+        for (int i = 1; i < Math.pow(2, freeDice.size()); i++) {
+            ArrayList<Die> set = new ArrayList<>();
+
+            //use a binary string as a bit field
+            String binary = String.format("%6s", Integer.toBinaryString(i)).replace(' ', '0');
+            //format with trailing zeroes rather than leading
+            binary = new StringBuilder(binary).reverse().toString();
+
+            for (int j = 0; j < freeDice.size(); j++) {
+                if (binary.charAt(j) == '1') {
+                    set.add(freeDice.get(j));
+                }
+            }
+
+            //if the set is worth points and a legal combination, add it to our options
+            if (state.getScore(set) != 0 && state.verifyHand(set)) {
+                options.add(set);
+            }
+        }
+        return options;
+    }
 
     /**
      * AI chooses what dice to set aside
@@ -17,40 +81,37 @@ public class SkyNet {
      * @return the dice chosen
      */
     private static ArrayList<Die> selectDice(ArrayList<ArrayList<Die>> options, PlayState state) {
+        //weights are the 'desireability' of any given choice the AI could make
         int[] weights = new int[options.size()];
 
         int i = 0;
         for (ArrayList<Die> dice : options) {
+            //what AI's running total would be if it made the choice represented by dice
             int score = state.getRunningTotal() + state.getScore(dice);
+            //how many freeDice would be left over if the AI made this choice
             int numFreeDice = state.getFreeDice().size() - dice.size();
+            //if the choice would consume all the dice, account for the new hand
             if (numFreeDice == 0) {
                 numFreeDice = 6;
             }
 
+            //has the player successfully banked a turn of 500 or more
             boolean onScoreBoard = state.getActivePlayer().getScore() > 0;
             weights[i] = Objects.requireNonNull(DataBase.queryStrategyTable(score, numFreeDice, onScoreBoard)).weight;
             i++;
         }
 
-        //FIXME debugging
-        System.out.print("Weights: [");
-        for (int el : weights) {
-            System.out.print(el + " ");
-        }
-        System.out.println("]");
+        //index of largest value in weights[]
         int indexChosen = maxValueIndex(weights);
-        System.out.println("Index chosen: " + indexChosen);
-
-        ArrayList<Die> choice = options.get(indexChosen);
-        System.out.print("Chose: ");
-        for (Die die : choice) {
-            System.out.print(die.getValue() + " ");
-        }
-        System.out.println();
-
-        return options.get(maxValueIndex(weights));
+        return options.get(indexChosen);
     }
 
+    /**
+     * finds highest value in an int[]
+     *
+     * @param values the int[] to search
+     * @return index of highest value
+     */
     private static int maxValueIndex(int[] values) {
         int max = Integer.MIN_VALUE;
         int index = 0;
@@ -63,91 +124,6 @@ public class SkyNet {
         }
 
         return index;
-    }
-
-    public static void takeTurn(PlayState state) {
-            ArrayList<Die> freeDice = state.getFreeDice();
-
-            if (freeDice.size() > 0 && state.getScore(freeDice) != 0) {
-                ArrayList<ArrayList<Die>> options = getOptions(state);
-
-                System.out.println("Dice: ");
-                for (Die die : freeDice) {
-                    System.out.println(die.getValue() + " ");
-                }
-                System.out.println();
-
-                int i = 0;
-                for (ArrayList<Die> set : options) {
-                    System.out.printf("Option %d:%n", i++);
-                    for (Die die : set) {
-                        System.out.print(die.getValue() + " ");
-                    }
-                    System.out.println();
-                }
-
-                ArrayList<Die> selection = selectDice(options, state);
-                state.setSelectedDice(selection);
-                state.addRunningTotal(state.getCurrentSelectionScore());
-                //FIXME debugging
-                System.out.println("Free dice: " + freeDice.size());
-                System.out.println("Skynet selected: ");
-                for (Die die : selection) {
-                    System.out.print(die.getValue() + " ");
-                }
-                System.out.println();
-                System.out.printf("Selection is worth %d points%n", state.getCurrentSelectionScore());
-
-                state.captureDice();
-
-                if (state.getFreeDice().isEmpty()) {
-                    state.nextHand();
-                }
-
-                boolean onScoreBoard = state.getActivePlayer().getScore() > 0;
-                if (!rollAgain(state.getRunningTotal(), freeDice.size(), onScoreBoard)) {
-                    state.endTurn();
-                }
-
-                else
-                    state.shakeDice();
-
-            }
-    }
-
-    /**
-     * finds all legal combinations of scoring dice given a roll
-     */
-    private static ArrayList<ArrayList<Die>> getOptions(PlayState state) {
-        ArrayList<Die> freeDice = state.getFreeDice();
-        ArrayList<ArrayList<Die>> options = new ArrayList<>();
-
-        for (int i = 1; i < Math.pow(2, freeDice.size()); i++) {
-            ArrayList<Die> set = new ArrayList<>();
-
-            String binary = String.format("%6s", Integer.toBinaryString(i)).replace(' ', '0');
-            //FIXME debugging
-            System.out.println(binary);
-            binary = new StringBuilder(binary).reverse().toString();
-            for (int j = 0; j < freeDice.size(); j++) {
-                if (binary.charAt(j) == '1') {
-                    set.add(freeDice.get(j));
-                }
-            }
-
-            if (state.getScore(set) != 0 && state.verifyHand(set)) {
-                System.out.print("Dice: ");
-                for (Die die : set) {
-                    System.out.print(die.getValue() + " ");
-                }
-                System.out.println();
-
-                System.out.println("Score: " + state.getScore(set));
-                System.out.println("------------");
-                options.add(set);
-            }
-        }
-        return options;
     }
 
     /**
