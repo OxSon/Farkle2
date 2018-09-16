@@ -26,7 +26,10 @@ public class Main {
     static {
         System.out.println("Working as expected");
         DataBase.dropStrategyTable();
+		DataBase.dropEndgameTable();
         DataBase.createStrategyTable();
+		DataBase.createEndgameTable();
         DataBase.fillStrategyTable();
+		DataBase.fillEndgameTable();
     }
 }

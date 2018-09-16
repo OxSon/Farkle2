@@ -14,10 +14,11 @@ import java.util.Scanner;
  */
 public class DataBase {
 
-    public static Tuple queryStrategyTable(int score, int numDice) {
+    public static Tuple queryStrategyTable(int score, int numDice, boolean fiveHundred) {
         try (Connection Driver = DriverManager.getConnection("jdbc:derby:FarkleDB;create=true");
              Statement s = Driver.createStatement()) {
-            ResultSet rs = s.executeQuery("SELECT Weight, RollAgain FROM Strategy WHERE Score=" + score + "AND N=" + numDice);
+            ResultSet rs = s.executeQuery("SELECT Weight, RollAgain FROM " +
+                    ((fiveHundred) ? "Endgame" : "Strategy") + " WHERE Score=" + score + "AND N=" + numDice);
             ResultSetMetaData rsmd = rs.getMetaData();
 
             ArrayList<String> response = new ArrayList<>();
@@ -87,13 +88,35 @@ public class DataBase {
         }
         return true;
     }
-	
-	public static boolean doesStrategyTableExist(){
-		return queryStrategyTable(50, 5) != null;
-	}
 
     public static boolean createStrategyTable() {
         return createTable("Strategy", "Score INT", "N INT", "Weight INT", "RollAgain BOOLEAN");
+    }
+
+    public static boolean createEndgameTable() {
+        return createTable("Endgame", "Score INT", "N INT", "Weight INT", "RollAgain BOOLEAN");
+    }
+
+    public static boolean fillEndgameTable() {
+        StringBuilder sb = new StringBuilder();
+        String fillTable;
+
+        try {
+            File sql = new File("data/farkle/cleanData2.sql");
+            Scanner input = new Scanner(sql);
+            while (input.hasNextLine()) {
+                sb.append(input.nextLine());
+            }
+
+            fillTable = sb.toString();
+            input.close();
+
+        } catch (IOException e) {
+            fillTable = "NULL";
+            e.printStackTrace();
+        }
+
+        return execStatement(fillTable);
     }
 
     public static boolean fillStrategyTable() {
@@ -131,6 +154,10 @@ public class DataBase {
         return true;
     }
 
+    public static boolean dropEndgameTable() {
+        return dropTable("Endgame");
+    }
+
     public static boolean dropStrategyTable() {
         return dropTable("Strategy");
     }
@@ -143,7 +170,7 @@ public class DataBase {
         createStrategyTable();
         fillStrategyTable();
 
-        Tuple response = queryStrategyTable(200, 4);
+        Tuple response = queryStrategyTable(200, 4, false);
         System.out.println(Objects.requireNonNull(response).weight);
         System.out.println(response.roll);
     }

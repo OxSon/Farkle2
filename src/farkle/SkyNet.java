@@ -62,10 +62,6 @@ public class SkyNet {
     }
 
     public static void takeTurn(PlayState state) {
-        boolean done = false;
-        state.clearSelectedDice();
-        state.clearCapturedDice();
-
             ArrayList<Die> freeDice = state.getFreeDice();
 
             if (freeDice.size() > 0 && state.getScore(freeDice) != 0) {
@@ -102,8 +98,6 @@ public class SkyNet {
 
                 if (state.getFreeDice().isEmpty()) {
                     state.nextHand();
-                    state.shakeDice();
-                    return;
                 }
 
                 if (!rollAgain(state.getRunningTotal(), freeDice.size()) && state.getActivePlayer().getScore() != 0 &&
