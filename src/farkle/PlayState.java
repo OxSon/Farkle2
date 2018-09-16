@@ -19,6 +19,9 @@ public class PlayState extends GameState {
 	private int runningTotal;
 	private boolean turnStart = true;
 	private boolean rolling = false;    //This will say if you should change the face of the dice during it's updates
+	
+	private boolean gameOver;
+	private int gameOverPlayer;
 
     private final Button bRollAgain;
     private final Button bEndTurn;
@@ -117,19 +120,22 @@ public class PlayState extends GameState {
 			return;
 		}
 		if (!rolling) {
-            if (e.getButton() == MouseEvent.BUTTON1) {
-                if (!turnStart)
-                    selectDicePressed(e);
-				if (bRollAgain.containsPoint(new Vector2(e.getX(),e.getY()))){
-					rollAgainPressed();
-				}
-				if (bEndTurn.containsPoint(new Vector2(e.getX(),e.getY()))){
+			switch (e.getButton()) {
+				case MouseEvent.BUTTON1:
+					if (!turnStart)
+						selectDicePressed(e);
+					if (bRollAgain.containsPoint(new Vector2(e.getX(),e.getY()))){
+						rollAgainPressed();
+					}	if (bEndTurn.containsPoint(new Vector2(e.getX(),e.getY()))){
+						endTurnPressed();
+					}	break;
+				case MouseEvent.BUTTON2:
 					endTurnPressed();
-				}
-			} else if (e.getButton() == MouseEvent.BUTTON2) {		//TODO MAKE THIS NOT RIGHT MOUSE FOR NEXT ROLL
-				endTurnPressed();
-			} else if (e.getButton() == MouseEvent.BUTTON3) {
-				rollAgainPressed();
+					break;
+				case MouseEvent.BUTTON3:
+					rollAgainPressed();
+					break;
+				default:
 			}
 		}
 	}
@@ -216,7 +222,22 @@ public class PlayState extends GameState {
 		getActivePlayer().finishTurn(runningTotal);        //Give the player the points they earned
 		runningTotal = 0;
 		nextHand();
+		if (getActivePlayer().getScore() >= 10000){
+			gameOver = true;
+			gameOverPlayer = playerTurn;
+		}
 		playerTurn = (playerTurn + 1) % players.size();
+		if (gameOver){
+			if (gameOverPlayer == playerTurn){
+				Player winningPlayer = players.get(gameOverPlayer);
+				for (Player p : players){
+					if (p.getScore() > winningPlayer.getScore()){
+						winningPlayer = p;
+					}
+				}
+				controller.push(new GameOverState(render, controller, winningPlayer));
+			}
+		}
 	}
 
     //FIXME test
