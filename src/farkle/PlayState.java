@@ -5,20 +5,32 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
+/**
+ * Represents a state of the game
+ * <p>
+ * @author Alec Mills and Josh DeMoss
+ */
 public class PlayState extends GameState {
 
+    //how many dice are we playing the game with
 	public static final int NUMOFDICE = 6;
 
+	//dice that have not been selected yet in a given turn
 	private final ArrayList<Die> freeDice;
+	//dice that have been selected
 	private ArrayList<Die> selectedDice;
+	//dice that have been confirmed (i.e. selected, validated, and then the remaining free dice rolled again)
 	private final ArrayList<Die> capturedDice;
 
 	private final ArrayList<Player> players;
+	//tracks player turn (0 or 1)
 	private int playerTurn;
 
+	//points a player has accrued so far in this turn only
 	private int runningTotal;
 	private boolean turnStart = true;
-	private boolean rolling = false;    //This will say if you should change the face of the dice during it's updates
+	//should we change the face of the dice during update
+	private boolean rolling = false;
 
     private final Button bRollAgain;
     private final Button bEndTurn;
