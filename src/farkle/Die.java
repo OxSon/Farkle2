@@ -32,15 +32,7 @@ public class Die {
         deltaPosition = new Vector2();
         roll();
     }
-
-    public void setAngle(double newAngle) {
-        angle = newAngle;
-    }
-
-    public void setPosition(Vector2 newPosition) {
-        position = newPosition;
-    }
-
+	
     /**
      * This is the main method that is called in order for the dice to have visual effects on the GUI
      */
@@ -59,7 +51,10 @@ public class Die {
             deltaAngle = 0;
         }
     }
-
+	/**
+	 * Draws the dice
+	 * @param g where to draw the dice
+	 */
     public void draw(Graphics g) {
         g.setColor(Color.WHITE);
         Vector2[] Points = getRotatedPoints();
@@ -146,7 +141,10 @@ public class Die {
         }
         deltaPosition.scale(.98);
     }
-
+	/**
+	 * This gets the points of the dice, rotated by the angle of the dice
+	 * @return 
+	 */
     private Vector2[] getRotatedPoints() {
         Vector2[] points = new Vector2[4];    //Four points of the square
         points[0] = new Vector2(position.getX() - SIZE / 2, position.getY() - SIZE / 2);    //TOP LEFT
@@ -158,7 +156,13 @@ public class Die {
         }
         return points;
     }
-
+	/**
+	 * This rotates a point around an origin by a specified angle
+	 * @param Point	The point to rotate
+	 * @param Origin The origin to rotate around
+	 * @param Angle The Angle to rotate by
+	 * @return 
+	 */
     private Vector2 rotatePoint(Vector2 Point, Vector2 Origin, double Angle) {
         Vector2 centeredPoint = new Vector2(Point.getX() - Origin.getX(), Point.getY() - Origin.getY());
         double sin = Math.sin(Angle);
@@ -194,10 +198,15 @@ public class Die {
     public Vector2 getPosition() {
         return position;
     }
+	
+    public void setAngle(double newAngle) {
+        angle = newAngle;
+    }
 
-    /**
-     * @return angle of the dice
-     */
+    public void setPosition(Vector2 newPosition) {
+        position = newPosition;
+    }
+
     public double getAngle() {
         return angle;
     }

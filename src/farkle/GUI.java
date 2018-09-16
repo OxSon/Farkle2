@@ -6,21 +6,26 @@ import java.util.ConcurrentModificationException;
 
 public class GUI {
 
-    public static final int RIGHTPANELSIZE = 400;
-    public static final int BOTTOMPANELSIZE = 300;
-    public static final int SCORINGPANELHEIGHT = 400;
-    public static final int NAMESPACESIZE = 40;
-    public static final long NOTIFICATIONDURATION = 4000;
+    public static final int RIGHTPANELSIZE = 400;		//How large the panel on the right is
+    public static final int BOTTOMPANELSIZE = 300;		//How large the panel on the bottom is
+    public static final int SCORINGPANELHEIGHT = 400;	//How much area is reserved for the scoring area
+    public static final int NAMESPACESIZE = 40;			//How much space is left for the names of the players
+    public static final int PANELBORDERSIZE = 5;		//How big the boarder is for the panels
+    public static final int SECTIONBORDERSIZE = 2;		//How big of a border is between sections in the panels
+    private static final Color BORDERCOLOR = Color.BLACK;	//What color the boarders are
+    public static final long NOTIFICATIONDURATION = 4000;	//How long the notification lasts
 
-    public static final int PANELBORDERSIZE = 5;
-    public static final int SECTIONBORDERSIZE = 2;
-    private static final Color BORDERCOLOR = Color.BLACK;
 
-    public static final int BUTTONWIDTH = 300;
+    public static final int BUTTONWIDTH = 300;	//How big the Buttons are in the GUI
 
-    private static long notificationTime;
-    private static String notificationMessage;
+    private static long notificationTime;		//How long the notification is going to be around for
+    private static String notificationMessage;	//What the message is to be drawn
 
+	/**
+	 * This draws the current state of the game on the Graphics provided
+	 * @param g	This is where the GUI is going to be drawn
+	 * @param playState The game state to be drawn
+	 */
     public static void draw(Graphics g, PlayState playState) {
 
         g.setColor(BORDERCOLOR);    //Set the color to the border background
@@ -125,8 +130,18 @@ public class GUI {
         g.drawString("Current Selection: " + playState.getCurrentSelectionScore(), 30, 100);
         drawScoring(g);
     }
-
-    public static void drawString(Graphics g, String text, int x, int y, int w, int h, Color BGC, Color textC) {
+	/**
+	 * This is an private method to draw a string with a rectangle around it
+	 * @param g Where to draw the image
+	 * @param text What text to be drawn
+	 * @param x What x position the box starts at
+	 * @param y What y position the box starts at
+	 * @param w How wide the box is
+	 * @param h How tall the box is
+	 * @param BGC The background color of the box
+	 * @param textC The Text color 
+	 */
+    private static void drawString(Graphics g, String text, int x, int y, int w, int h, Color BGC, Color textC) {
         Rectangle rect = new Rectangle(x, y, w, h);
         g.setColor(BGC);
         g.fillRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
@@ -135,12 +150,18 @@ public class GUI {
         int height = g.getFontMetrics().getHeight();
         g.drawString(text, rect.getX() + rect.getWidth() / 2 - width / 2, rect.getY() + rect.getHeight() / 2 + height / 4);
     }
-
+	/**
+	 * This tells the gui to display an important notification
+	 * @param message The message to be displayed
+	 */
     public static void notify(String message) {
         notificationTime = System.currentTimeMillis();
         notificationMessage = message;
     }
-
+	/**
+	 * This draws the scoring guide
+	 * @param g	Where to draw the image
+	 */
     public static void drawScoring(Graphics g) {
         Rectangle Rect = new Rectangle( //This draws a border below the name space
                 Renderer.WindowWidth - RIGHTPANELSIZE + PANELBORDERSIZE,
