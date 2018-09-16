@@ -31,17 +31,16 @@ public class PlayState extends GameState {
 	private boolean turnStart = true;
 	//should we change the face of the dice during update
 	private boolean rolling = false;
-	//TODO JOSH
+	//This represents if someone has reached 10k points
 	private boolean gameOver;
-	//TODO JOSH
+	//This is the player who first got over 10k points
 	private int gameOverPlayer;
 
-	//TODO JOSH
+	//This is the button you press to roll again 
     private final Button bRollAgain;
-    //TODO JOSH
+    //This is the button you press to end turn
     private final Button bEndTurn;
 
-    //TODO JOSH
     public PlayState(Renderer render, StateManager controller) {
         super(render, controller);
         players = new ArrayList<>();
@@ -83,7 +82,9 @@ public class PlayState extends GameState {
         bEndTurn.Draw(g);
     }
 
-    //TODO JOSH
+    /**
+	 * This handles any key input from the user
+	 */
     private void handleKeys() {
         if (Input.isKeyPressed(KeyEvent.VK_ESCAPE)) {
             controller.pop();
@@ -96,7 +97,7 @@ public class PlayState extends GameState {
      * @param e MouseEvent
      */
     private void selectDicePressed(MouseEvent e) {
-        checkSelectedDice(e, freeDice, selectedDice);
+        if (checkSelectedDice(e, freeDice, selectedDice)) return;
         checkSelectedDice(e, selectedDice, freeDice);
     }
 
@@ -183,7 +184,9 @@ public class PlayState extends GameState {
         }
     }
 
-    //TODO JOSH
+    /**
+	 * This updates all game objects 
+	 */
     @Override
     public void update() {
         handleKeys();        //Handle any input from the keyboard
@@ -336,7 +339,11 @@ public class PlayState extends GameState {
     }
 
 
-    //TODO JOSH
+    /**
+	 * This checks if there are any unique combinations that use all the dice
+	 * @param oc This is an array of the occurence count
+	 * @return The value of any unique combinations it is
+	 */
     public int allDiceScoring(int[] oc) {
         //Full House Check
         for (int oc2 : oc) {
@@ -382,7 +389,11 @@ public class PlayState extends GameState {
     }
 
 
-    //TODO JOSH
+    /**
+	 * checks the score value for the dice passed in
+	 * @param dice the dice to check the score for
+	 * @return 
+	 */
     public int getScore(ArrayList<Die> dice) {
         int score = 0;
         int[] oc = new int[Die.MAXVALUE];    //Occurance Count
@@ -416,8 +427,6 @@ public class PlayState extends GameState {
         score += 400 * (oc[3] / 3);    //Handle Triple fours
         score += 350 * (oc[4] / 3);    //Handle Triple fives	SPECIAL MATH We would already get 150 from the single fives scoring
         score += 600 * (oc[5] / 3);    //Handle Triple sixes
-
-        //FIXME
         return score;
     }
 
