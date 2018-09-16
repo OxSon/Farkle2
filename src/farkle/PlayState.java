@@ -97,7 +97,7 @@ public class PlayState extends GameState {
      * @param e MouseEvent
      */
     private void selectDicePressed(MouseEvent e) {
-        checkSelectedDice(e, freeDice, selectedDice);
+        if (checkSelectedDice(e, freeDice, selectedDice)) return;
         checkSelectedDice(e, selectedDice, freeDice);
     }
 
@@ -216,7 +216,6 @@ public class PlayState extends GameState {
                 return;
             }
 
-            //TODO THIS IS WHERE WE INTERFACE WITH AN AI CLASS
             SkyNet.takeTurn(this);
         }
     }
@@ -290,7 +289,8 @@ public class PlayState extends GameState {
         getActivePlayer().finishTurn(runningTotal);        //Give the player the points they earned
         runningTotal = 0;
         nextHand();
-        if (getActivePlayer().getScore() >= 10000){
+        //FIXME debugging
+        if (getActivePlayer().getScore() >= 1000){
             gameOver = true;
             gameOverPlayer = playerTurn;
         }
