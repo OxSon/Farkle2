@@ -1,8 +1,7 @@
 package farkle;
 
-import com.sun.glass.events.KeyEvent;
-import java.awt.Font;
-import java.awt.Graphics;
+import java.awt.*;
+import java.awt.event.KeyEvent;
 
 public class GameOverState extends GameState {
 
