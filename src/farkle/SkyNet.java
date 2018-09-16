@@ -152,7 +152,13 @@ public class SkyNet {
      * @return boolean
      */
     public static boolean rollAgain(int score, int numFreeDice) {
-        Tuple response = DataBase.queryStrategyTable(score, numFreeDice);
-        return Objects.requireNonNull(response).roll;
+        if (score < 500) {
+            return true;
+        }
+
+        else {
+            Tuple response = DataBase.queryStrategyTable(score, numFreeDice);
+            return Objects.requireNonNull(response).roll;
+        }
     }
 }
