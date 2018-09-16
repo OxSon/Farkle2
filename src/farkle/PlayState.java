@@ -19,9 +19,9 @@ public class PlayState extends GameState {
 	private int runningTotal;
 	private boolean turnStart = true;
 	private boolean rolling = false;    //This will say if you should change the face of the dice during it's updates
-	
-	private Button bRollAgain;
-	private Button bEndTurn;
+
+    private final Button bRollAgain;
+    private final Button bEndTurn;
 
 	public PlayState(Renderer render, StateManager controller) {
 		super(render, controller);
@@ -29,8 +29,9 @@ public class PlayState extends GameState {
 		freeDice = new ArrayList<>();
 		selectedDice = new ArrayList<>();
 		capturedDice = new ArrayList<>();
-		
-		players.add(new Player("Josh"));
+
+        //FIXME remove one AI player
+        players.add(new Player("Josh", true));
 		players.add(new Player("Skynet", true));
 
 		for (int i = 0; i < NUMOFDICE; i++) {
@@ -68,24 +69,22 @@ public class PlayState extends GameState {
 	}
 
 	private void selectDicePressed(MouseEvent e) {
-		//FIXME code duplication, extract method?
-		for (int i = 0; i < freeDice.size(); i++) {
-			if (Math.hypot(freeDice.get(i).getPosition().getX() - e.getX(), freeDice.get(i).getPosition().getY() - e.getY()) < Die.HYPOT / 2) {
-				selectedDice.add(freeDice.get(i));
-				freeDice.remove(i);
-				return;
-			}
-		}
-		for (int i = 0; i < selectedDice.size(); i++) {
-			if (Math.hypot(selectedDice.get(i).getPosition().getX() - e.getX(), selectedDice.get(i).getPosition().getY() - e.getY()) < Die.HYPOT / 2) {
-				freeDice.add(selectedDice.get(i));
-				selectedDice.remove(i);
-				return;
-			}
-		}
-	}
+        checkSelectedDice(e, freeDice, selectedDice);
+        checkSelectedDice(e, selectedDice, freeDice);
+    }
 
-	private void endTurnPressed() {
+    private boolean checkSelectedDice(MouseEvent e, ArrayList<Die> freeDice, ArrayList<Die> selectedDice) {
+        for (int i = 0; i < freeDice.size(); i++) {
+            if (Math.hypot(freeDice.get(i).getPosition().getX() - e.getX(), freeDice.get(i).getPosition().getY() - e.getY()) < Die.HYPOT / 2) {
+                selectedDice.add(freeDice.get(i));
+                freeDice.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void endTurnPressed() {
 		if (players.get(playerTurn).getScore() == 0) {
 			if (runningTotal + getScore(selectedDice) < 500) {
 				return;
@@ -118,8 +117,9 @@ public class PlayState extends GameState {
 			return;
 		}
 		if (!rolling) {
-			if (e.getButton() == MouseEvent.BUTTON1 && !turnStart) {
-				selectDicePressed(e);
+            if (e.getButton() == MouseEvent.BUTTON1) {
+                if (!turnStart)
+                    selectDicePressed(e);
 				if (bRollAgain.containsPoint(new Vector2(e.getX(),e.getY()))){
 					rollAgainPressed();
 				}
@@ -188,25 +188,7 @@ public class PlayState extends GameState {
 		}
 	}
 
-	public void clearAllDice() {
-		clearCapturedDice();
-		clearSelectedDice();
-		clearFreeDice();
-	}
-
-	public void clearCapturedDice() {
-		capturedDice.clear();
-	}
-
-	public void clearSelectedDice() {
-		selectedDice.clear();
-	}
-
-	public void clearFreeDice() {
-		freeDice.clear();
-	}
-
-	public void addRunningTotal(int score) {
+    public void addRunningTotal(int score) {
 		runningTotal += score;
 	}
 
@@ -237,98 +219,112 @@ public class PlayState extends GameState {
 		playerTurn = (playerTurn + 1) % players.size();
 	}
 
-	//FIXME test
-	public boolean verifyHand(ArrayList<Die> dice) {
+    //FIXME test
+    public boolean verifyHand(ArrayList<Die> dice) {
 //build record of how many of each die-value we have
-		int[] oc = new int[Die.MAXVALUE];
-		for (Die aDice : dice) {
-			oc[aDice.getValue() - 1]++;
-		}
-		//test failure conditions
-		for (int i = 0; i < Die.MAXVALUE; i++) {
-			//we don't need to pay attention to non-existent die-values
-			if (oc[i] > 0) {
-				//ones and twos of values other than 1 or 5 are invalid except in scenarios
-				//that involve using all 6 dice and will have been handled separately
-				//FIXME debugging
-				if (oc[i] < 3 && (i != 0 && i != 4)) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
+        int[] oc = new int[Die.MAXVALUE];
+        for (Die die : dice) {
+            oc[die.getValue() - 1]++;
+        }
+        if (allDiceScoring(oc) != 0) {
+            return true;
+        }
+        //test failure conditions
+        for (int i = 0; i < Die.MAXVALUE; i++) {
+            //we don't need to pay attention to non-existent die-values
+            if (oc[i] > 0) {
+                //ones and twos of values other than 1 or 5 are invalid except in scenarios
+                //that involve using all 6 dice and will have been handled separately
+                if (oc[i] < 3 && (i != 0 && i != 4)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
-	public int getScore(ArrayList<Die> dice) {
-		int score = 0;
-		int[] oc = new int[Die.MAXVALUE];	//Occurance Count
 
-		for (Die aDice : dice) {
-			oc[aDice.getValue() - 1]++;
-		}
+    public int allDiceScoring(int[] oc) {
+        //Full House Check
+        for (int oc2 : oc) {
+            if (oc2 == 4) {
+                for (int oc3 : oc) {    //Check for a pair to determine if its a full house
+                    if (oc3 == 2) {
+                        return 1500;    //FULL HOSUSE
+                    }
+                }
+            }
+        }
+        //STRAIGHT CHECK
+        int count = 0;
+        for (int anOc3 : oc) {
+            if (anOc3 == 1) {
+                count++;
+            }
+        }
+        if (count == 6) {
+            return 1500;        //Special case, this will use the whole roll, leaving no other points available
+        }
+        //ONLY PAIRS CHECK
+        count = 0;
+        for (int anOc2 : oc) {
+            if (anOc2 == 2) {
+                count++;
+            }
+        }
+        if (count == 3) {        //If we found 3 pairs
+            return 1500;        //Special case, this will use the whole roll, leaving no other points available
+        }
+        //ONLY TRIPLETS CHECK
+        count = 0;
+        for (int anOc : oc) {
+            if (anOc == 3) {
+                count++;
+            }
+        }
+        if (count == 2) {    //If we found 2 triplets
+            return 2500;        //Special case, this will use the whole roll, leaving no other points available
+        }
+        return 0;
+    }
 
-		for (int i = 0; i < oc.length; i++) {
-			if (oc[i] == 4) {
-				score += 1000;
-				oc[i] -= 4;
-				for (int anOc2 : oc) {	//Check for a pair to determine if its a full house
-					if (anOc2 == 2) {
-						return 1500;	//FULL HOSUSE
-					}
-				}
-			} else if (oc[i] == 5) {
-				score += 2000;
-				oc[i] -= 5;
-			} else if (oc[i] == 6) {
-				return 3000;	//Max points
-			}
-		}
-		score += 100 * oc[0];	//Handle Single Ones
-		score += 50 * oc[4];	//Handle Single Fives
 
-		//We don't care about Triple Ones, as it adds up to the same points as single ones
-		score += 200 * (oc[1] / 3);	//Handle Triple twos
-		score += 300 * (oc[2] / 3);	//Handle Triple threes
-		score += 400 * (oc[3] / 3);	//Handle Triple fours
-		score += 350 * (oc[4] / 3);	//Handle Triple fives	SPECIAL MATH We would already get 150 from the single fives scoring
-		score += 600 * (oc[5] / 3);	//Handle Triple sixes
-		//STRAIGHT CHECK
-		int count = 0;
-		for (int anOc3 : oc) {
-			if (anOc3 == 1) {
-				count++;
-			}
-		}
-		if (count == 6) {
-			return 1500;        //Special case, this will use the whole roll, leaving no other points available
-		}
-		//ONLY PAIRS CHECK
-		count = 0;
-		for (int anOc2 : oc) {
-			if (anOc2 == 2) {
-				count++;
-			}
-		}
-		if (count == 3) {        //If we found 3 pairs
-			return 1500;        //Special case, this will use the whole roll, leaving no other points available
-		}
-		//ONLY TRIPLETS CHECK
-		count = 0;
-		for (int anOc : oc) {
-			if (anOc == 3) {
-				count++;
-			}
-		}
-		if (count == 2) {    //If we found 2 triplets
-			return 2500;        //Special case, this will use the whole roll, leaving no other points available
-		}
+    public int getScore(ArrayList<Die> dice) {
+        int score = 0;
+        int[] oc = new int[Die.MAXVALUE];    //Occurance Count
+
+        for (Die aDice : dice) {
+            oc[aDice.getValue() - 1]++;
+        }
+
+        if (allDiceScoring(oc) != 0) {
+            return allDiceScoring(oc);
+        }
+        for (int i = 0; i < oc.length; i++) {
+            if (oc[i] == 4) {
+                score += 1000;
+                oc[i] -= 4;
+            }
+            else if (oc[i] == 5) {
+                score += 2000;
+                oc[i] -= 5;
+            }
+            else if (oc[i] == 6) {
+                return 3000;    //Max points
+            }
+        }
+        score += 100 * oc[0];    //Handle Single Ones
+        score += 50 * oc[4];    //Handle Single Fives
+
+        //We don't care about Triple Ones, as it adds up to the same points as single ones
+        score += 200 * (oc[1] / 3);    //Handle Triple twos
+        score += 300 * (oc[2] / 3);    //Handle Triple threes
+        score += 400 * (oc[3] / 3);    //Handle Triple fours
+        score += 350 * (oc[4] / 3);    //Handle Triple fives	SPECIAL MATH We would already get 150 from the single fives scoring
+        score += 600 * (oc[5] / 3);    //Handle Triple sixes
 
 		//FIXME
-		if (verifyHand(getSelectedDice())) {
-			return score;
-		} else {
-			return 0;
-		}
+        return score;
 	}
 
 	public ArrayList<Player> getPlayers() {

@@ -16,7 +16,7 @@ public class StateManager {
         states = new Stack<>();
         GameState initialState = new MainMenuState(rend, this);
         states.push(initialState);
-        rend = new Renderer(this);
+        rend = new Renderer();
         panel = new GamePanel(this);
         panel.addMouseListener(initialState);
         rend.setGamePanel(panel);

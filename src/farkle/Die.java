@@ -6,9 +6,9 @@ public class Die {
 
     //Constants
     public static final int MAXVALUE = 6;    //The number of sides the dice has
-    public static final int SIZE = 100;            //How big to display the dice
+    private static final int SIZE = 100;            //How big to display the dice
     public static final double HYPOT = Math.sqrt(SIZE * SIZE * 2);
-    public static final int DOTSIZE = 19;
+    private static final int DOTSIZE = 19;
 
     //Functional Fields
     private int value;
@@ -31,17 +31,6 @@ public class Die {
         this.position = position;
         deltaPosition = new Vector2();
         roll();
-    }
-
-    /**
-     * FIXME
-     * constructor for debugging
-     */
-    public Die(int value) {
-        bound = new Rectangle(10, 10, 10, 10);
-        position = new Vector2(0, 0);
-        deltaPosition = new Vector2();
-        this.value = value;
     }
 
     public void setAngle(double newAngle) {
@@ -186,7 +175,7 @@ public class Die {
      * @param Intensity how vigorously the dice shake
      */
     public void shake(double Intensity) {
-		roll();	//Always make sure it is a new value in case of a 0 delta Angle
+        roll();    //Always make sure it is a new value in case of a 0 delta Angle
         double newAngle = (Math.random()) * Math.PI * 2;
         deltaAngle = (Math.random() - .5) * 10;
         deltaPosition = new Vector2(Math.cos(newAngle) * Intensity, Math.sin(newAngle) * Intensity);
@@ -195,7 +184,7 @@ public class Die {
     /**
      * This updates the value to a random value up to and including MAXVALUE, but greater than 0
      */
-    public void roll() {
+    private void roll() {
         value = (int) (Math.random() * MAXVALUE) + 1;
     }
 
