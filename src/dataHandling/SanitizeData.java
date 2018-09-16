@@ -6,11 +6,18 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class SanitizeData {
+    /**
+     * application entry-point
+     *
+     * @param args
+     */
     public static void main(String[] args) {
         try {
+            //data to format
             File dirtyData = new File("data/farkle/farkle_strategy2.csv");
             Scanner input = new Scanner(dirtyData);
 
+            //where to store formatted data
             File cleanData = new File("data/farkle/cleanData2.sql");
             FileWriter write = new FileWriter(cleanData, true);
 
@@ -20,9 +27,9 @@ public class SanitizeData {
 
                 String[] values = line.split(",");
                 System.out.println();
-                for (int i = 1; i <= 6; i++) {
-                    //build correct line / column relationship
 
+                //build correct line / column relationship
+                for (int i = 1; i <= 6; i++) {
                     StringBuilder cell = new StringBuilder();//extract trailing chars from number strings
                     cell.append(values[i]);
 

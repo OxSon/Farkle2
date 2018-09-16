@@ -2,8 +2,8 @@ package farkle;
 
 import java.awt.*;
 /**
- * Implements a simple button class without swing
- * @author Joshua
+ * Implements simple buttons without swing
+ * @author Josh DeMoss
  */
 public class Button {
 	
