@@ -8,19 +8,23 @@ import java.util.Scanner;
 public class SanitizeData {
     public static void main(String[] args) {
         try {
-            File dirtyData = new File("data/farkle/farkle_strategy.csv");
+            File dirtyData = new File("data/farkle/farkle_strategy2.csv");
             Scanner input = new Scanner(dirtyData);
 
-            File cleanData = new File("data/farkle/cleanData.sql");
+            File cleanData = new File("data/farkle/cleanData2.sql");
             FileWriter write = new FileWriter(cleanData, true);
 
             while (input.hasNextLine()) {
-                String[] line = input.nextLine().split(",");
+                String line = input.nextLine();
+                System.out.println(line);
+
+                String[] values = line.split(",");
+                System.out.println();
                 for (int i = 1; i <= 6; i++) {
                     //build correct line / column relationship
 
                     StringBuilder cell = new StringBuilder();//extract trailing chars from number strings
-                    cell.append(line[i]);
+                    cell.append(values[i]);
 
                     //save char for later setting of boolean RollAgain value in DB
                     char rollAgain = cell.charAt(cell.length() - 1);
@@ -28,7 +32,7 @@ public class SanitizeData {
 
                     if (Integer.valueOf(cell.toString()) != 0) {
                         String row = "(" +
-                                line[0] +
+                                values[0] +
                                 ", " +
                                 String.valueOf(Math.abs(7 - i)) +
                                 ", " +
