@@ -20,7 +20,7 @@ public class GameOverState extends GameState {
 		g.setColor(Color.RED);
         g.setFont(new Font("TimesRoman", Font.BOLD, 30));
 		int width = g.getFontMetrics().stringWidth("Winning with " + winner.getScore() + " points:");
-		g.drawString(winner.getName(), Renderer.WindowWidth - width / 2, 50);
+		g.drawString("Winning with " + winner.getScore() + " points:", Renderer.WindowWidth / 2 - width / 2, 50);
         g.setFont(new Font("TimesRoman", Font.BOLD, 150));
 		width = g.getFontMetrics().stringWidth(winner.getName());
 		int height = g.getFontMetrics().getHeight();
