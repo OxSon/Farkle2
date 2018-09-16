@@ -3,6 +3,11 @@ package farkle;
 import java.awt.*;
 //import java.awt.event.ActionListener; Will be used if we want to make the buttons self contained action listeners
 
+/**
+ * Implements simple buttons without swing
+ *
+ * @author Josh DeMoss
+ */
 public class Button {
 
     private final Rectangle rect;
