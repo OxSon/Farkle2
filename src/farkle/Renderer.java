@@ -10,7 +10,7 @@ public class Renderer {
     public static final int WindowWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
     public static final int WindowHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
 
-    public Renderer(StateManager controller) {
+    public Renderer() {
         frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);

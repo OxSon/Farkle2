@@ -1,4 +1,4 @@
-INSERT INTO Strategy (Score, N, Weight, RollAgain) VALUES
+INSERT INTO Endgame (Score, N, Weight, RollAgain) VALUES
   (0, 6, 23, true),
   (50, 5, 13, true),
   (100, 5, 15, true),

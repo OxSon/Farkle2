@@ -17,8 +17,15 @@ public class DataBase {
     public static Tuple queryStrategyTable(int score, int numDice, boolean fiveHundred) {
         try (Connection Driver = DriverManager.getConnection("jdbc:derby:FarkleDB;create=true");
              Statement s = Driver.createStatement()) {
-            ResultSet rs = s.executeQuery("SELECT Weight, RollAgain FROM " +
-                    ((fiveHundred) ? "Endgame" : "Strategy") + " WHERE Score=" + score + "AND N=" + numDice);
+            ResultSet rs;
+            if (fiveHundred) {
+                rs = s.executeQuery("SELECT Weight, RollAgain FROM " +
+                        "Endgame" + " WHERE Score=" + score + " AND N=" + numDice);
+            }
+            else {
+                rs = s.executeQuery("SELECT Weight, RollAgain FROM " +
+                        "Strategy" + " WHERE Score=" + score + " AND N=" + numDice);
+            }
             ResultSetMetaData rsmd = rs.getMetaData();
 
             ArrayList<String> response = new ArrayList<>();
@@ -35,9 +42,10 @@ public class DataBase {
             }
             else {
                 //FIXME debugging
-                System.out.println("Score: " + score + " numDice: " + numDice);
-                throw new IllegalArgumentException("Score/N Dice pairing is unreachable " +
-                        "under valid Farkle play, please check values");
+                System.out.println("Score: " + score + " numDice: " + numDice + "fiveHundred?: " + fiveHundred);
+//                throw new IllegalArgumentException("Score/N Dice pairing is unreachable " +
+//                        "under valid Farkle play, please check values");
+                return new Tuple(0, false);
             }
 
         } catch (SQLException | IllegalArgumentException e) {

@@ -12,7 +12,7 @@ public class MainMenuState extends GameState {
 
     private final Vector2 dotPosition;    //This will just be a dot that follows the mouse around to look cool
 
-    final ArrayList<Die> dice;
+    private final ArrayList<Die> dice;
 
     public MainMenuState(Renderer render, StateManager controller) {
         super(render, controller);

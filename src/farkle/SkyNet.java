@@ -16,7 +16,7 @@ public class SkyNet {
      * @param options dice-combinations to consider
      * @return the dice chosen
      */
-    public static ArrayList<Die> selectDice(ArrayList<ArrayList<Die>> options, PlayState state) {
+    private static ArrayList<Die> selectDice(ArrayList<ArrayList<Die>> options, PlayState state) {
         int[] weights = new int[options.size()];
 
         int i = 0;
@@ -105,11 +105,8 @@ public class SkyNet {
                 }
 
                 boolean onScoreBoard = state.getActivePlayer().getScore() > 0;
-                if (!rollAgain(state.getRunningTotal(), freeDice.size(), onScoreBoard) &&
-                        state.getActivePlayer().getScore() != 0 &&
-                        state.getRunningTotal() < 500) {
+                if (!rollAgain(state.getRunningTotal(), freeDice.size(), onScoreBoard)) {
                     state.endTurn();
-                    return;
                 }
 
                 else
@@ -121,7 +118,7 @@ public class SkyNet {
     /**
      * finds all legal combinations of scoring dice given a roll
      */
-    public static ArrayList<ArrayList<Die>> getOptions(PlayState state) {
+    private static ArrayList<ArrayList<Die>> getOptions(PlayState state) {
         ArrayList<Die> freeDice = state.getFreeDice();
         ArrayList<ArrayList<Die>> options = new ArrayList<>();
 
@@ -138,8 +135,7 @@ public class SkyNet {
                 }
             }
 
-            //FIXME
-            if (state.getScore(set) != 0) {
+            if (state.getScore(set) != 0 && state.verifyHand(set)) {
                 System.out.print("Dice: ");
                 for (Die die : set) {
                     System.out.print(die.getValue() + " ");
@@ -161,7 +157,7 @@ public class SkyNet {
      * @param numFreeDice how many dice will be rolled, if rolled
      * @return boolean
      */
-    public static boolean rollAgain(int score, int numFreeDice, boolean fiveHundred) {
+    private static boolean rollAgain(int score, int numFreeDice, boolean fiveHundred) {
         Tuple response = DataBase.queryStrategyTable(score, numFreeDice, fiveHundred);
         return Objects.requireNonNull(response).roll;
     }
