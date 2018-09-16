@@ -23,8 +23,12 @@ public class SkyNet {
         for (ArrayList<Die> dice : options) {
             int score = state.getRunningTotal() + state.getScore(dice);
             int numFreeDice = state.getFreeDice().size() - dice.size();
+            if (numFreeDice == 0) {
+                numFreeDice = 6;
+            }
 
-            weights[i] = Objects.requireNonNull(DataBase.queryStrategyTable(score, numFreeDice)).weight;
+            boolean onScoreBoard = state.getActivePlayer().getScore() > 0;
+            weights[i] = Objects.requireNonNull(DataBase.queryStrategyTable(score, numFreeDice, onScoreBoard)).weight;
             i++;
         }
 
@@ -100,7 +104,9 @@ public class SkyNet {
                     state.nextHand();
                 }
 
-                if (!rollAgain(state.getRunningTotal(), freeDice.size()) && state.getActivePlayer().getScore() != 0 &&
+                boolean onScoreBoard = state.getActivePlayer().getScore() > 0;
+                if (!rollAgain(state.getRunningTotal(), freeDice.size(), onScoreBoard) &&
+                        state.getActivePlayer().getScore() != 0 &&
                         state.getRunningTotal() < 500) {
                     state.endTurn();
                     return;
@@ -131,7 +137,17 @@ public class SkyNet {
                     set.add(freeDice.get(j));
                 }
             }
-            if (state.getScore(set) != 0 && state.verifyHand(set)) {
+
+            //FIXME
+            if (state.getScore(set) != 0) {
+                System.out.print("Dice: ");
+                for (Die die : set) {
+                    System.out.print(die.getValue() + " ");
+                }
+                System.out.println();
+
+                System.out.println("Score: " + state.getScore(set));
+                System.out.println("------------");
                 options.add(set);
             }
         }
@@ -145,8 +161,8 @@ public class SkyNet {
      * @param numFreeDice how many dice will be rolled, if rolled
      * @return boolean
      */
-    public static boolean rollAgain(int score, int numFreeDice) {
-        Tuple response = DataBase.queryStrategyTable(score, numFreeDice);
+    public static boolean rollAgain(int score, int numFreeDice, boolean fiveHundred) {
+        Tuple response = DataBase.queryStrategyTable(score, numFreeDice, fiveHundred);
         return Objects.requireNonNull(response).roll;
     }
 }

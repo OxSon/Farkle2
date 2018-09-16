@@ -68,24 +68,22 @@ public class PlayState extends GameState {
 	}
 
 	private void selectDicePressed(MouseEvent e) {
-		//FIXME code duplication, extract method?
-		for (int i = 0; i < freeDice.size(); i++) {
-			if (Math.hypot(freeDice.get(i).getPosition().getX() - e.getX(), freeDice.get(i).getPosition().getY() - e.getY()) < Die.HYPOT / 2) {
-				selectedDice.add(freeDice.get(i));
-				freeDice.remove(i);
-				return;
-			}
-		}
-		for (int i = 0; i < selectedDice.size(); i++) {
-			if (Math.hypot(selectedDice.get(i).getPosition().getX() - e.getX(), selectedDice.get(i).getPosition().getY() - e.getY()) < Die.HYPOT / 2) {
-				freeDice.add(selectedDice.get(i));
-				selectedDice.remove(i);
-				return;
-			}
-		}
-	}
+        if (checkSelectedDice(e, freeDice, selectedDice)) return;
+        if (checkSelectedDice(e, selectedDice, freeDice)) return;
+    }
 
-	private void endTurnPressed() {
+    private boolean checkSelectedDice(MouseEvent e, ArrayList<Die> freeDice, ArrayList<Die> selectedDice) {
+        for (int i = 0; i < freeDice.size(); i++) {
+            if (Math.hypot(freeDice.get(i).getPosition().getX() - e.getX(), freeDice.get(i).getPosition().getY() - e.getY()) < Die.HYPOT / 2) {
+                selectedDice.add(freeDice.get(i));
+                freeDice.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void endTurnPressed() {
 		if (players.get(playerTurn).getScore() == 0) {
 			if (runningTotal + getScore(selectedDice) < 500) {
 				return;
@@ -118,8 +116,9 @@ public class PlayState extends GameState {
 			return;
 		}
 		if (!rolling) {
-			if (e.getButton() == MouseEvent.BUTTON1 && !turnStart) {
-				selectDicePressed(e);
+            if (e.getButton() == MouseEvent.BUTTON1) {
+                if (!turnStart)
+                    selectDicePressed(e);
 				if (bRollAgain.containsPoint(new Vector2(e.getX(),e.getY()))){
 					rollAgainPressed();
 				}
@@ -241,8 +240,8 @@ public class PlayState extends GameState {
 	public boolean verifyHand(ArrayList<Die> dice) {
 //build record of how many of each die-value we have
 		int[] oc = new int[Die.MAXVALUE];
-		for (Die aDice : dice) {
-			oc[aDice.getValue() - 1]++;
+        for (Die die : dice) {
+            oc[die.getValue() - 1]++;
 		}
 		//test failure conditions
 		for (int i = 0; i < Die.MAXVALUE; i++) {
@@ -250,7 +249,6 @@ public class PlayState extends GameState {
 			if (oc[i] > 0) {
 				//ones and twos of values other than 1 or 5 are invalid except in scenarios
 				//that involve using all 6 dice and will have been handled separately
-				//FIXME debugging
 				if (oc[i] < 3 && (i != 0 && i != 4)) {
 					return false;
 				}
