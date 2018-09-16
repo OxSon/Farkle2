@@ -107,7 +107,8 @@ public class SkyNet {
                     return;
                 }
 
-                if (!rollAgain(state.getRunningTotal(), freeDice.size())) {
+                if (!rollAgain(state.getRunningTotal(), freeDice.size()) && state.getActivePlayer().getScore() != 0 &&
+                        state.getRunningTotal() < 500) {
                     state.endTurn();
                     return;
                 }
@@ -152,13 +153,7 @@ public class SkyNet {
      * @return boolean
      */
     public static boolean rollAgain(int score, int numFreeDice) {
-        if (score < 500) {
-            return true;
-        }
-
-        else {
-            Tuple response = DataBase.queryStrategyTable(score, numFreeDice);
-            return Objects.requireNonNull(response).roll;
-        }
+        Tuple response = DataBase.queryStrategyTable(score, numFreeDice);
+        return Objects.requireNonNull(response).roll;
     }
 }
