@@ -19,6 +19,9 @@ public class PlayState extends GameState {
 	private int runningTotal;
 	private boolean turnStart = true;
 	private boolean rolling = false;    //This will say if you should change the face of the dice during it's updates
+	
+	private Button bRollAgain;
+	private Button bEndTurn;
 
 	public PlayState(Renderer render, StateManager controller) {
 		super(render, controller);
@@ -26,19 +29,36 @@ public class PlayState extends GameState {
 		freeDice = new ArrayList<>();
 		selectedDice = new ArrayList<>();
 		capturedDice = new ArrayList<>();
+		
+		players.add(new Player("Josh"));
+		players.add(new Player("Skynet", true));
 
 		for (int i = 0; i < NUMOFDICE; i++) {
 			freeDice.add(new Die(
 					new Vector2(((double) i + 1d) / ((double) NUMOFDICE + 1d) * (Renderer.WindowWidth - GUI.RIGHTPANELSIZE), (Renderer.WindowHeight - GUI.BOTTOMPANELSIZE) / 2),
 					new Rectangle(0, 0, Renderer.WindowWidth - GUI.RIGHTPANELSIZE, Renderer.WindowHeight - GUI.BOTTOMPANELSIZE)));
 		}
-		players.add(new Player("Josh"));
-		players.add(new Player("Skynet", true));
+        bRollAgain = new Button(
+                new Rectangle(
+						Renderer.WindowWidth - GUI.RIGHTPANELSIZE - GUI.BUTTONWIDTH - GUI.PANELBORDERSIZE,
+                        Renderer.WindowHeight - GUI.BOTTOMPANELSIZE + GUI.PANELBORDERSIZE,
+                        GUI.BUTTONWIDTH,
+                        (GUI.BOTTOMPANELSIZE - GUI.PANELBORDERSIZE) / 2),
+                "Roll Again", Color.BLACK, Color.GRAY, Color.GREEN, 3, 30);
+        bEndTurn = new Button(
+                new Rectangle(
+						Renderer.WindowWidth - GUI.RIGHTPANELSIZE - GUI.BUTTONWIDTH - GUI.PANELBORDERSIZE ,
+                        Renderer.WindowHeight - GUI.BOTTOMPANELSIZE / 2,
+                        GUI.BUTTONWIDTH,
+                        (GUI.BOTTOMPANELSIZE - GUI.PANELBORDERSIZE) / 2),
+                "End Turn", Color.BLACK, Color.GRAY, Color.GREEN, 3, 30);
 	}
 
 	@Override
 	public void draw(Graphics g) {
 		GUI.draw(g, this);
+		bRollAgain.Draw(g);
+		bEndTurn.Draw(g);
 	}
 
 	private void handleKeys() {
@@ -75,20 +95,14 @@ public class PlayState extends GameState {
 		endTurn();
 	}
 
-	private void nextRollPressed() {
+	private void rollAgainPressed() {
 		if (turnStart) {        //If this is the first roll of a hand
 			turnStart = false;
 			shakeDice();
 		}
 		if (getScore(selectedDice) != 0 && verifyHand(selectedDice)) {
 			runningTotal += getScore(selectedDice);
-			capturedDice.addAll(selectedDice);
-			selectedDice.clear();
-
-			for (int i = 0; i < capturedDice.size(); i++) {
-				capturedDice.get(i).setAngle(0);
-				capturedDice.get(i).setPosition(new Vector2(100 + i * 150, Renderer.WindowHeight - GUI.BOTTOMPANELSIZE + 100));
-			}
+			captureDice();
 			if (freeDice.isEmpty()) {
 				nextHand();
 				GUI.notify("Extra Hand!");
@@ -106,10 +120,16 @@ public class PlayState extends GameState {
 		if (!rolling) {
 			if (e.getButton() == MouseEvent.BUTTON1 && !turnStart) {
 				selectDicePressed(e);
+				if (bRollAgain.containsPoint(new Vector2(e.getX(),e.getY()))){
+					rollAgainPressed();
+				}
+				if (bEndTurn.containsPoint(new Vector2(e.getX(),e.getY()))){
+					endTurnPressed();
+				}
 			} else if (e.getButton() == MouseEvent.BUTTON2) {		//TODO MAKE THIS NOT RIGHT MOUSE FOR NEXT ROLL
 				endTurnPressed();
 			} else if (e.getButton() == MouseEvent.BUTTON3) {
-				nextRollPressed();
+				rollAgainPressed();
 			}
 		}
 	}
@@ -117,6 +137,10 @@ public class PlayState extends GameState {
 	@Override
 	public void update() {
 		handleKeys();        //Handle any input from the keyboard
+		
+        Vector2 mousePosition = new Vector2(MouseInfo.getPointerInfo().getLocation().getX(), MouseInfo.getPointerInfo().getLocation().getY());
+		bRollAgain.update(mousePosition);
+		bEndTurn.update(mousePosition);
 		if (rolling) {        //If there are dice rolling
 			for (Die aFreeDice : freeDice) {        //update all the dice
 				aFreeDice.update();
@@ -146,16 +170,14 @@ public class PlayState extends GameState {
 		}
 	}
 
-	public void setCapturedDice(ArrayList<Die> dice) {
-		for (Die die : dice) {
-			selectedDice.remove(die);
-			capturedDice.add(die);
-		}
-	}
-
 	public void captureDice() {
 		capturedDice.addAll(selectedDice);
 		selectedDice = new ArrayList<>();
+
+		for (int i = 0; i < capturedDice.size(); i++) {
+			capturedDice.get(i).setAngle(0);
+			capturedDice.get(i).setPosition(new Vector2(100 + i * 150, Renderer.WindowHeight - GUI.BOTTOMPANELSIZE + 100));
+		}
 	}
 
 	public void setSelectedDice(ArrayList<Die> dice) {

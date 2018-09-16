@@ -16,6 +16,8 @@ public class GUI {
 	public static final int SECTIONBORDERSIZE = 2;
 	public static final Color BORDERCOLOR = Color.BLACK;
 
+	public static final int BUTTONWIDTH = 300;
+
 	private static long notificationTime;
 	private static String notificationMessage;
 
@@ -70,10 +72,10 @@ public class GUI {
 					SECTIONBORDERSIZE);
 
 			g.drawString("SCORE: " + playState.getPlayers().get(i).getScore(),
-					Renderer.WindowWidth - RIGHTPANELSIZE + PANELBORDERSIZE,
+					Renderer.WindowWidth - RIGHTPANELSIZE + PANELBORDERSIZE + 10,
 					(int) (playerPanelSize * i) + NAMESPACESIZE * 2);
 			g.drawString("FARKLES: " + playState.getPlayers().get(i).getFarkles(),
-					Renderer.WindowWidth - RIGHTPANELSIZE + PANELBORDERSIZE,
+					Renderer.WindowWidth - RIGHTPANELSIZE + PANELBORDERSIZE + 10,
 					(int) (playerPanelSize * i) + NAMESPACESIZE * 2 + 20);
 
 			g.fillRect( //This draws a border at the end of the players space
@@ -84,12 +86,12 @@ public class GUI {
 		}
 		try {
 			//draw the dice that haven't been selected
-			ArrayList<Die> freeDice = (ArrayList<Die>)playState.getFreeDice().clone();
+			ArrayList<Die> freeDice = (ArrayList<Die>) playState.getFreeDice().clone();
 			for (Die aFreeDice : freeDice) {
 				aFreeDice.draw(g);
 			}
 			//draw a circle around the dice that have been selected
-			ArrayList<Die> selectedDice = (ArrayList<Die>)playState.getSelectedDice().clone();
+			ArrayList<Die> selectedDice = (ArrayList<Die>) playState.getSelectedDice().clone();
 			for (Die aSelectedDice : selectedDice) {
 				g.setColor(Color.RED);
 				g.fillOval(
@@ -100,11 +102,11 @@ public class GUI {
 				aSelectedDice.draw(g);    //draw the dice on top of the selection circle
 			}
 			//Draw all the dice that have been selected and then moved off the table
-			ArrayList<Die> capturedDice = (ArrayList<Die>)playState.getCapturedDice().clone();
+			ArrayList<Die> capturedDice = (ArrayList<Die>) playState.getCapturedDice().clone();
 			for (Die aCapturedDice : capturedDice) {
 				aCapturedDice.draw(g);
 			}
-		} catch (ConcurrentModificationException e){
+		} catch (ConcurrentModificationException e) {
 			return;
 		}
 
@@ -139,14 +141,20 @@ public class GUI {
 	}
 
 	public static void drawScoring(Graphics g) {
-		g.setColor(Color.MAGENTA);
 		Rectangle Rect = new Rectangle( //This draws a border below the name space
 				Renderer.WindowWidth - RIGHTPANELSIZE + PANELBORDERSIZE,
 				Renderer.WindowHeight - SCORINGPANELHEIGHT,
 				RIGHTPANELSIZE - PANELBORDERSIZE * 2,
 				NAMESPACESIZE);
+		g.setColor(Color.MAGENTA);
 		g.fillRect(Rect.getX(), Rect.getY(), Rect.getWidth(), Rect.getHeight());
-
+		Rect = new Rectangle(
+				Renderer.WindowWidth - RIGHTPANELSIZE + PANELBORDERSIZE,
+				Renderer.WindowHeight - SCORINGPANELHEIGHT + NAMESPACESIZE,
+				RIGHTPANELSIZE - PANELBORDERSIZE * 2,
+				2);
+		g.setColor(Color.BLACK);
+		g.fillRect(Rect.getX(), Rect.getY(), Rect.getWidth(), Rect.getHeight());
 		Font f = g.getFont();
 		Rectangle r = new Rectangle(
 				Renderer.WindowWidth - RIGHTPANELSIZE / 2, Renderer.WindowHeight - SCORINGPANELHEIGHT,
@@ -155,15 +163,17 @@ public class GUI {
 		g.setColor(Color.BLACK);
 		drawStringWithCenter("SCORING GUIDE", r.getX(), r.getY() + 30, g);
 		int Offset = 50;
-		g.setFont(new Font("TimesRoman", Font.BOLD, 14));
+		g.setFont(new Font("TimesRoman", Font.BOLD, 20));
 		drawStringWithCenter("Single 1 = 100        Single 5 = 50", r.getX(), r.getY() + (Offset += 20), g);
-		drawStringWithCenter("Three 1’s = 300        Three 2’s = 200        Three 3’s = 300", r.getX(), r.getY() + (Offset += 20), g);
-		drawStringWithCenter("Three 4’s = 400        Three 5’s = 500        Three 6’s = 600", r.getX(), r.getY() + (Offset += 20), g);
-		drawStringWithCenter("Four of any dice = 1,000        Five of any dice = 2,000", r.getX(), r.getY() + (Offset += 20), g);
+		drawStringWithCenter("Three 1’s = 300        Three 2’s = 200", r.getX(), r.getY() + (Offset += 20), g);
+		drawStringWithCenter("Three 3’s = 300        Three 4’s = 400", r.getX(), r.getY() + (Offset += 20), g);
+		drawStringWithCenter("Three 5’s = 500        Three 6’s = 600", r.getX(), r.getY() + (Offset += 20), g);
+		drawStringWithCenter("Four of any dice = 1,000", r.getX(), r.getY() + (Offset += 20), g);
+		drawStringWithCenter("Five of any dice = 2,000", r.getX(), r.getY() + (Offset += 20), g);
 		drawStringWithCenter("Six of any dice = 3,000", r.getX(), r.getY() + (Offset += 20), g);
 		drawStringWithCenter("1-6 straight = 1,500", r.getX(), r.getY() + (Offset += 20), g);
 		drawStringWithCenter("Three pairs = 1,500", r.getX(), r.getY() + (Offset += 20), g);
-		drawStringWithCenter("Four of any number with a pair = 1,500", r.getX(), r.getY() + (Offset += 20), g);
+		drawStringWithCenter("Four & Two of a kind = 1,500", r.getX(), r.getY() + (Offset += 20), g);
 		drawStringWithCenter("Two triplets = 2,500", r.getX(), r.getY() + (Offset += 20), g);
 	}
 
