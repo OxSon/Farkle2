@@ -96,6 +96,13 @@ public class DataBase {
         }
         return true;
     }
+	
+	public static boolean doesStrategyExist(){
+		return queryStrategyTable(50, 5, false) != null;
+	}
+	public static boolean doesEndgameExist(){
+		return queryStrategyTable(50, 5, true) != null;
+	}
 
     public static boolean createStrategyTable() {
         return createTable("Strategy", "Score INT", "N INT", "Weight INT", "RollAgain BOOLEAN");

@@ -7,12 +7,12 @@ import java.util.ArrayList;
 
 public class MainMenuState extends GameState {
 
-    private final Button play;
-    private final Button exit;
+    private final Button play;	//The button for play
+    private final Button exit;	//The button for exit
 
-    private final Vector2 dotPosition;    //This will just be a dot that follows the mouse around to look cool
+    private final Vector2 dotPosition;	//This is the position of the dot that follows the mouse
 
-    private final ArrayList<Die> dice;
+    private final ArrayList<Die> dice;	//These are the dice bouncing around on the main menu
 
     public MainMenuState(Renderer render, StateManager controller) {
         super(render, controller);
@@ -38,7 +38,10 @@ public class MainMenuState extends GameState {
                     new Rectangle(0, 0, Renderer.WindowWidth, Renderer.WindowHeight)));
         }
     }
-
+	/**
+	 * Draws the current state of the main menu
+	 * @param g 
+	 */
     @Override
     public void draw(Graphics g) {
         g.setColor(Color.GREEN);
@@ -61,13 +64,17 @@ public class MainMenuState extends GameState {
         g.setColor(Color.PINK);
         g.fillOval((int) dotPosition.getX() - 7, (int) dotPosition.getY() - 7, 15, 15);
     }
-
+	/**
+	 * Handles and input from the user
+	 */
     private void handleKeys() {
         if (Input.isKeyPressed(KeyEvent.VK_ESCAPE)) {
             controller.pop();
         }
     }
-
+	/**
+	 * Updated the dice and the following dot
+	 */
     @Override
     public void update() {
         handleKeys();
@@ -93,7 +100,10 @@ public class MainMenuState extends GameState {
             }
         }
     }
-
+	/**
+	 * Handles any mouse presses
+	 * @param e The mouse event
+	 */
     @Override
     public void mousePressed(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {

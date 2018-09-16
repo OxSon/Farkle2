@@ -1,17 +1,21 @@
 package farkle;
 
+import com.sun.glass.events.KeyEvent;
 import java.awt.Font;
 import java.awt.Graphics;
 
 public class GameOverState extends GameState {
 
-	Player winner;
+	Player winner;	//This is the player who won
 
 	public GameOverState(Renderer render, StateManager controller, Player winner) {
 		super(render, controller);
 		this.winner = winner;
 	}
-
+	/**
+	 * Draws the game state
+	 * @param g Where to draw the image
+	 */
 	@Override
 	public void draw(Graphics g) {
         g.setFont(new Font("TimesRoman", Font.BOLD, 30));
@@ -22,10 +26,13 @@ public class GameOverState extends GameState {
 		int height = g.getFontMetrics().getHeight();
 		g.drawString(winner.getName(), Renderer.WindowWidth - width / 2, Renderer.WindowHeight - height / 2);
 	}
-
+	/**
+	 * Checks for the player to exit the game
+	 */
 	@Override
 	public void update() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		if (Input.isKeyPressed(KeyEvent.VK_ESCAPE)){
+			controller.exit();
+		}
 	}
-
 }

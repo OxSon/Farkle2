@@ -49,15 +49,14 @@ public class PlayState extends GameState {
         selectedDice = new ArrayList<>();
         capturedDice = new ArrayList<>();
 
-        //FIXME remove one AI player
-        players.add(new Player("Josh", false));
-        players.add(new Player("Skynet", true));
+        players.add(new Player("Player"));
+		players.add(new Player("Skynet", true));
 
-        for (int i = 0; i < NUMOFDICE; i++) {
-            freeDice.add(new Die(
-                    new Vector2(((double) i + 1d) / ((double) NUMOFDICE + 1d) * (Renderer.WindowWidth - GUI.RIGHTPANELSIZE), (Renderer.WindowHeight - GUI.BOTTOMPANELSIZE) / 2),
-                    new Rectangle(0, 0, Renderer.WindowWidth - GUI.RIGHTPANELSIZE, Renderer.WindowHeight - GUI.BOTTOMPANELSIZE)));
-        }
+		for (int i = 0; i < NUMOFDICE; i++) {
+			freeDice.add(new Die(
+					new Vector2(((double) i + 1d) / ((double) NUMOFDICE + 1d) * (Renderer.WindowWidth - GUI.RIGHTPANELSIZE), (Renderer.WindowHeight - GUI.BOTTOMPANELSIZE) / 2),
+					new Rectangle(0, 0, Renderer.WindowWidth - GUI.RIGHTPANELSIZE, Renderer.WindowHeight - GUI.BOTTOMPANELSIZE)));
+		}
         bRollAgain = new Button(
                 new Rectangle(
                         Renderer.WindowWidth - GUI.RIGHTPANELSIZE - GUI.BUTTONWIDTH - GUI.PANELBORDERSIZE,
