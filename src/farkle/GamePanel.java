@@ -5,14 +5,17 @@ import java.awt.*;
 
 public class GamePanel extends JPanel implements Runnable {
 
-    private final StateManager controller;
+    private final StateManager controller;	//This is the controller that we will tell to draw
 
     private final int FPS = 60;    //This is the Target FPS, not actual
 
     public GamePanel(StateManager controller) {
         this.controller = controller;
     }
-
+	/**
+	 * This calls pain on the controller which will draw the active game state
+	 * @param g 
+	 */
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -20,7 +23,9 @@ public class GamePanel extends JPanel implements Runnable {
         g.clearRect(0, 0, Renderer.WindowWidth, Renderer.WindowWidth);
         controller.draw(g);
     }
-
+	/**
+	 * This is the timer that will call draw ever 60th of a second
+	 */
     public void run() {
         long start, elapsed, wait;
 

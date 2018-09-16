@@ -33,8 +33,7 @@ public class PlayState extends GameState {
 		selectedDice = new ArrayList<>();
 		capturedDice = new ArrayList<>();
 
-        //FIXME remove one AI player
-        players.add(new Player("Josh", true));
+        players.add(new Player("Player"));
 		players.add(new Player("Skynet", true));
 
 		for (int i = 0; i < NUMOFDICE; i++) {
